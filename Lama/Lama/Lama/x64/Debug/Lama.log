@@ -1,0 +1,20 @@
+﻿  main.c
+E:\CPP-Programming\Lama\Lama\Lama\grid.h(12,29): warning C4142: 'Uint32': benign redefinition of type
+E:\CPP-Programming\Lama\Lama\include\SDL_stdinc.h(203): message : see declaration of 'Uint32'
+E:\CPP-Programming\Lama\Lama\Lama\input.h(7,29): warning C4142: 'Uint32': benign redefinition of type
+E:\CPP-Programming\Lama\Lama\Lama\grid.h(12): message : see declaration of 'Uint32'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(101,30): warning C4090: 'function': different 'const' qualifiers
+E:\CPP-Programming\Lama\Lama\Lama\main.c(103,38): warning C4090: 'function': different 'const' qualifiers
+E:\CPP-Programming\Lama\Lama\Lama\main.c(104,34): warning C4090: 'function': different 'const' qualifiers
+E:\CPP-Programming\Lama\Lama\Lama\main.c(185,30): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(185,26): warning C4024: 'memset': different types for formal and actual parameter 2
+E:\CPP-Programming\Lama\Lama\Lama\main.c(202,35): warning C4047: 'function': 'Uint32' differs in levels of indirection from 'void *'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(202,31): warning C4024: 'SDL_CreateWindow': different types for formal and actual parameter 6
+E:\CPP-Programming\Lama\Lama\Lama\main.c(205,39): warning C4047: 'function': 'int' differs in levels of indirection from 'void *'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(205,35): warning C4024: 'SDL_CreateRenderer': different types for formal and actual parameter 2
+E:\CPP-Programming\Lama\Lama\Lama\main.c(206,39): warning C4047: 'function': 'Uint32' differs in levels of indirection from 'void *'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(206,35): warning C4024: 'SDL_CreateRenderer': different types for formal and actual parameter 3
+E:\CPP-Programming\Lama\Lama\Lama\main.c(226,24): warning C4133: '=': incompatible types - from 'SDL_Window *' to 'window_info *'
+E:\CPP-Programming\Lama\Lama\Lama\main.c(295,28): warning C4020: 'grass_field_update': too many actual parameters
+E:\CPP-Programming\Lama\Lama\Lama\main.c(309,35): warning C4020: 'grass_field_draw': too many actual parameters
+  Lama.vcxproj -> E:\CPP-Programming\Lama\Lama\x64\Debug\Lama.exe

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>..\build\$(Configuration)\</OutDir>
+    <IntDir>..\build\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName).$(PlatformShortName).$(Configuration.toLower())</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>include\;$(SolutionDir)Cyanide-Core\include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\build\;$(SolutionDir)lib\$(PlatformTarget)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;Cyanide-Core.$(PlatformShortName).$(Configuration.toLower()).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

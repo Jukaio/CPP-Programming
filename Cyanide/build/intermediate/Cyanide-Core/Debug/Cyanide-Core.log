@@ -1,0 +1,22 @@
+﻿  sprite.cpp
+  sprite_handler.cpp
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(31,42): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(31,42): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(32,27): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(32,27): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(33,27): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(33,27): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(34,27): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(34,27): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(39,9): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(39,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(40,9): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(40,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(41,12): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(41,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(42,12): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+E:\CPP-Programming\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(42,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+SDL2_mixer.lib(SDL2_mixer.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+SDL2_image.lib(SDL2_image.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in SDL2.lib(SDL2.dll); second definition ignored
+  Cyanide-Core.vcxproj -> E:\CPP-Programming\Cyanide\Cyanide-Core\..\build\Cyanide-Core.x64.debug.lib

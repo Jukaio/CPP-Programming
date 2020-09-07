@@ -1,0 +1,15 @@
+﻿  weird_forest.cpp
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\include\template_test.h(22,1): error C2061: syntax error: identifier 'get'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(7,1): error C2143: syntax error: missing ';' before '{'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(7,1): error C2447: '{': missing function header (old-style formal list?)
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(14,27): error C2372: 'application::implement': redefinition; different types of indirection
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\include\core\application.h(40): message : see declaration of 'application::implement'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(20,2): error C2511: 'weird_forest::weird_forest(int,int,float,const char *)': overloaded member function not found in 'weird_forest'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\include\weird_forest.h(10): message : see declaration of 'weird_forest'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(21,1): error C2550: 'weird_forest::{ctor}': constructor initializer lists are only allowed on constructor definitions
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(25,1): error C2511: 'void weird_forest::application_enter(void)': overloaded member function not found in 'weird_forest'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\include\weird_forest.h(10): message : see declaration of 'weird_forest'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(26,27): error C2597: illegal reference to non-static member 'application::m_renderer'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\include\core\application.h(32): message : see declaration of 'application::m_renderer'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\source\weird_forest.cpp(30,1): error C2511: 'void weird_forest::application_exit(void)': overloaded member function not found in 'weird_forest'
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Weird-Forest\include\weird_forest.h(10): message : see declaration of 'weird_forest'

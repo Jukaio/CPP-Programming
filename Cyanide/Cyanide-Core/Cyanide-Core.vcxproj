@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\audio\sound_handler.h" />
+    <ClInclude Include="include\core\state.h" />
+    <ClInclude Include="include\cyanide_graphics.h" />
+    <ClInclude Include="include\entity\inheritances\collidable.h" />
+    <ClInclude Include="include\entity\data\collider.h" />
+    <ClInclude Include="include\core\FSM.h" />
+    <ClInclude Include="include\entity\inheritances\destructable.h" />
+    <ClInclude Include="include\input\input_handler.h" />
+    <ClInclude Include="include\input\keyboard.h" />
+    <ClInclude Include="include\input\mouse.h" />
+    <ClInclude Include="include\input\window.h" />
+    <ClInclude Include="include\utilities\resource_cache.h" />
+    <ClInclude Include="include\utilities\service.h" />
+    <ClInclude Include="include\graphics\texture_manager.h" />
+    <ClInclude Include="include\utilities\cyanide_math.h" />
+    <ClInclude Include="include\core\application.h" />
+    <ClInclude Include="include\cyanide_core.h" />
+    <ClInclude Include="include\audio\music_player.h" />
+    <ClInclude Include="include\audio\sound.h" />
+    <ClInclude Include="include\graphics\sprite.h" />
+    <ClInclude Include="include\graphics\texture.h" />
+    <ClInclude Include="include\entity\inheritances\renderable.h" />
+    <ClInclude Include="include\entity\data\transform.h" />
+    <ClInclude Include="include\entity\inheritances\updatable.h" />
+    <ClInclude Include="include\graphics\sprite_handler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\audio\sound_handler.cpp" />
+    <ClCompile Include="source\input\input_handler.cpp" />
+    <ClCompile Include="source\input\keyboard.cpp" />
+    <ClCompile Include="source\input\mouse.cpp" />
+    <ClCompile Include="source\core\FSM.cpp" />
+    <ClCompile Include="source\graphics\texture_manager.cpp" />
+    <ClCompile Include="source\entity\inheritances\collidable.cpp" />
+    <ClCompile Include="source\entity\inheritances\renderable.cpp" />
+    <ClCompile Include="source\entity\data\collider.cpp" />
+    <ClCompile Include="source\input\window.cpp" />
+    <ClCompile Include="source\utilities\cyanide_math.cpp" />
+    <ClCompile Include="source\audio\music_player.cpp" />
+    <ClCompile Include="source\audio\sound.cpp" />
+    <ClCompile Include="source\core\application.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="source\graphics\sprite.cpp" />
+    <ClCompile Include="source\graphics\texture.cpp" />
+    <ClCompile Include="source\entity\data\transform.cpp" />
+    <ClCompile Include="source\entity\inheritances\updatable.cpp" />
+    <ClCompile Include="source\graphics\sprite_handler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{2B4F0F36-47ED-46AA-9102-448919DD4F87}</ProjectGuid>
+    <RootNamespace>Cyanide</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>..\build\</OutDir>
+    <IntDir>..\build\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName).$(PlatformShortName).$(Configuration.toLower())</TargetName>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>..\build\</OutDir>
+    <IntDir>..\build\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName).$(PlatformShortName).$(Configuration.toLower())</TargetName>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(PlatformTarget)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(PlatformTarget)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(PlatformShortName)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

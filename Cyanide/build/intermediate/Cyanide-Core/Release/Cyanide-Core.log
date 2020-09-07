@@ -1,0 +1,32 @@
+﻿  input_handler.cpp
+  keyboard.cpp
+  mouse.cpp
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\input\mouse.cpp(63,25): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\input\mouse.cpp(64,25): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\input\mouse.cpp(69,23): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\input\mouse.cpp(70,23): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  FSM.cpp
+  texture_manager.cpp
+  collidable.cpp
+  renderable.cpp
+  collider.cpp
+  cyanide_math.cpp
+  music.cpp
+  sound.cpp
+  application.cpp
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\core\application.cpp(89,35): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  main.cpp
+  sprite.cpp
+  texture.cpp
+  transform.cpp
+  updatable.cpp
+  sprite_handler.cpp
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(32,9): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(32,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(33,9): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(33,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(34,12): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(34,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(35,12): warning C4838: conversion from 'float' to 'int' requires a narrowing conversion
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\source\graphics\sprite_handler.cpp(35,12): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  Cyanide-Core.vcxproj -> D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\Cyanide-Core\..\build\Cyanide-Core.x64.release.lib

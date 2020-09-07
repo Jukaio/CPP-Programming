@@ -1,0 +1,21 @@
+﻿  maze.cpp
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(217,8): warning C4244: 'argument': conversion from '__int64' to 'unsigned int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(286,38): warning C4100: 'p_renderer': unreferenced formal parameter
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(290,29): warning C4100: 'p_ms': unreferenced formal parameter
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(323,34): warning C4100: 'p_ms': unreferenced formal parameter
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(349,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(348,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(347,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(346,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(373,43): warning C4244: 'argument': conversion from 'int' to 'Uint8', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(373,38): warning C4244: 'argument': conversion from 'int' to 'Uint8', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(380,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(379,37): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(378,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\source\maze.cpp(377,40): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating code
+  3 of 607 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    8 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  A-Star Pathfinding.vcxproj -> D:\OneDrive - Uppsala universitet\University\Programming\AI I\Project SDL\Cyanide\A-Star Pathfinding\..\build\Release\A-Star-Pathfinding.x64.release.exe

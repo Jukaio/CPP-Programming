@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="application" Collapsed="true">
+    <Position X="11.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CgAYEwAgAAAAAAAAAAAAAAAAAAAAAAAABAAAASAAAAA=</HashCode>
+      <FileName>include\core\application.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="music" Collapsed="true">
+    <Position X="13" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>include\music.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sound" Collapsed="true">
+    <Position X="14.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>include\sound.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="after_main_check" Collapsed="true">
+    <Position X="11.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>source\main.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="custom_entity" Collapsed="true">
+    <Position X="7.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAIAABAAAQIAAAAAUAAI=</HashCode>
+      <FileName>include\entity\custom_entity.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="collidable" Collapsed="true">
+    <Position X="6.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAEAAAAAAAAAAAAIAAAAIAAAAAAAAI=</HashCode>
+      <FileName>include\entity\inheritances\bases\collidable.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="collider" Collapsed="true">
+    <Position X="13" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAACAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>include\entity\data\collider.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="sprite_entity" Collapsed="true">
+    <Position X="4.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAEAAAAAAAAAAAABAAAQIAAAAAEAAI=</HashCode>
+      <FileName>include\entity\sprite_entity.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="sprite_renderable" Collapsed="true">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAQAgA=</HashCode>
+      <FileName>include\entity\inheritances\derived\sprite_renderable.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="resource_cache&lt;T&gt;" Collapsed="true">
+    <Position X="16.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAgAAAAAAAAEAAAAQAAAAAEAAAAAAQIAAAACEAA=</HashCode>
+      <FileName>include\resource_cache.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="texture_manager" Collapsed="true">
+    <Position X="16.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAIAACAAAAAAAAAAACAAAEIAAAQIAAQAAAAA=</HashCode>
+      <FileName>include\texture_manager.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="vector2" Collapsed="true">
+    <Position X="13" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAABAAAAAAAAAAAAAABgAAAAAAA=</HashCode>
+      <FileName>include\utilities\cyanide_math.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="vector3" Collapsed="true">
+    <Position X="14.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAQAAAAA=</HashCode>
+      <FileName>include\utilities\cyanide_math.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="rectangle" Collapsed="true">
+    <Position X="14.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAhgAAAAAAA=</HashCode>
+      <FileName>include\utilities\cyanide_math.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="sprite" Collapsed="true">
+    <Position X="11.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAABAQAAABAAAAAACAAAABAAABCAAABAAAQAAAAAAAA=</HashCode>
+      <FileName>include\sprite.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="texture" Collapsed="true">
+    <Position X="14.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAQAAAAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>include\texture.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="renderable" Collapsed="true">
+    <Position X="8.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAIAAAAAAAEEAAAAAABAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>include\entity\inheritances\bases\renderable.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="transform" Collapsed="true">
+    <Position X="11.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAEiAgAAAAAAAAAAAEAAAAAAAAAAMAAAA=</HashCode>
+      <FileName>include\entity\data\transform.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="updatable" Collapsed="true">
+    <Position X="4.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAABBBAAQAAAAAAUAAA=</HashCode>
+      <FileName>include\entity\inheritances\bases\updatable.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="static_sprite_entity" Collapsed="true">
+    <Position X="6.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAABAAAAAIAAAAAAAAI=</HashCode>
+      <FileName>include\entity\static_sprite_entity.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="sprite_flip" Collapsed="true">
+    <Position X="11.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAQAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>include\sprite.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
