@@ -5,6 +5,7 @@ include listing.inc
 INCLUDELIB MSVCRTD
 INCLUDELIB OLDNAMES
 
+PUBLIC	GRASS_DECIDE_TABLE
 msvcjmc	SEGMENT
 __F66CEB67_corecrt_stdio_config@h DB 01H
 __101834BA_corecrt_wstdio@h DB 01H
@@ -19,19 +20,42 @@ __B0C4CEA9_malloc@h DB 01H
 __D291391D_SDL_rect@h DB 01H
 __9F64F477_grass@c DB 01H
 msvcjmc	ENDS
+_DATA	SEGMENT
+GRASS_DECIDE_TABLE DD 00H
+	DD	01H
+	DD	02H
+	DD	01H
+	DD	01H
+	DD	02H
+	DD	02H
+	DD	02H
+	DD	02H
+	DD	02H
+	DD	02H
+	DD	02H
+_DATA	ENDS
 PUBLIC	grass_field_init
+PUBLIC	grass_sense
+PUBLIC	grass_act
 PUBLIC	grass_field_update
 PUBLIC	grass_grow
+PUBLIC	grass_wither
 PUBLIC	grass_spread
-PUBLIC	grass_field_toggle_active_at
+PUBLIC	grass_field_toggle_alive_at
 PUBLIC	grass_field_draw
 PUBLIC	grass_field_clean
 PUBLIC	__JustMyCode_Default
 EXTRN	__imp_calloc:PROC
 EXTRN	__imp_free:PROC
+EXTRN	SDL_SetRenderDrawColor:PROC
+EXTRN	SDL_RenderFillRect:PROC
 EXTRN	SDL_RenderCopy:PROC
+EXTRN	animation_step_forward:PROC
+EXTRN	animation_step_backwards:PROC
 EXTRN	grid_set_data_at:PROC
+EXTRN	grid_world_to_grid:PROC
 EXTRN	grid_open_neighbours_at:PROC
+EXTRN	grid_check_node_data:PROC
 EXTRN	rand:PROC
 EXTRN	_RTC_CheckStackVars:PROC
 EXTRN	_RTC_InitBase:PROC
@@ -43,37 +67,55 @@ EXTRN	__security_cookie:QWORD
 ;	COMDAT pdata
 pdata	SEGMENT
 $pdata$grass_field_init DD imagerel $LN9
-	DD	imagerel $LN9+433
+	DD	imagerel $LN9+463
 	DD	imagerel $unwind$grass_field_init
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
-$pdata$grass_field_update DD imagerel $LN16
-	DD	imagerel $LN16+422
+$pdata$grass_sense DD imagerel $LN9
+	DD	imagerel $LN9+223
+	DD	imagerel $unwind$grass_sense
+pdata	ENDS
+;	COMDAT pdata
+pdata	SEGMENT
+$pdata$grass_act DD imagerel $LN11
+	DD	imagerel $LN11+319
+	DD	imagerel $unwind$grass_act
+pdata	ENDS
+;	COMDAT pdata
+pdata	SEGMENT
+$pdata$grass_field_update DD imagerel $LN11
+	DD	imagerel $LN11+296
 	DD	imagerel $unwind$grass_field_update
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
 $pdata$grass_grow DD imagerel $LN3
-	DD	imagerel $LN3+163
+	DD	imagerel $LN3+165
 	DD	imagerel $unwind$grass_grow
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
+$pdata$grass_wither DD imagerel $LN5
+	DD	imagerel $LN5+260
+	DD	imagerel $unwind$grass_wither
+pdata	ENDS
+;	COMDAT pdata
+pdata	SEGMENT
 $pdata$grass_spread DD imagerel $LN4
-	DD	imagerel $LN4+204
+	DD	imagerel $LN4+227
 	DD	imagerel $unwind$grass_spread
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
-$pdata$grass_field_toggle_active_at DD imagerel $LN6
-	DD	imagerel $LN6+340
-	DD	imagerel $unwind$grass_field_toggle_active_at
+$pdata$grass_field_toggle_alive_at DD imagerel $LN6
+	DD	imagerel $LN6+415
+	DD	imagerel $unwind$grass_field_toggle_alive_at
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
-$pdata$grass_field_draw DD imagerel $LN9
-	DD	imagerel $LN9+226
+$pdata$grass_field_draw DD imagerel $LN14
+	DD	imagerel $LN14+464
 	DD	imagerel $unwind$grass_field_draw
 pdata	ENDS
 ;	COMDAT pdata
@@ -99,14 +141,38 @@ $unwind$grass_field_clean DD 025052a01H
 xdata	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
-$unwind$grass_field_draw DD 025053401H
-	DD	0118231dH
-	DD	070110029H
-	DD	05010H
+$unwind$grass_field_draw DD 035064119H
+	DD	01143319H
+	DD	0700d0030H
+	DD	0500b600cH
+	DD	imagerel __GSHandlerCheck
+	DD	0178H
 xdata	ENDS
+;	COMDAT CONST
+CONST	SEGMENT
+grass_field_draw$rtcName$0 DB 06fH
+	DB	074H
+	DB	068H
+	DB	065H
+	DB	072H
+	DB	05fH
+	DB	052H
+	DB	065H
+	DB	063H
+	DB	074H
+	DB	00H
+	ORG $+5
+grass_field_draw$rtcVarDesc DD 098H
+	DD	010H
+	DQ	FLAT:grass_field_draw$rtcName$0
+	ORG $+48
+grass_field_draw$rtcFrameData DD 01H
+	DD	00H
+	DQ	FLAT:grass_field_draw$rtcVarDesc
+CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
-$unwind$grass_field_toggle_active_at DD 025053401H
+$unwind$grass_field_toggle_alive_at DD 025053401H
 	DD	0118231dH
 	DD	070110021H
 	DD	05010H
@@ -175,34 +241,72 @@ grass_spread$rtcFrameData DD 03H
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
-$unwind$grass_grow DD 025053401H
-	DD	0118231dH
-	DD	07011001dH
-	DD	05010H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$grass_field_update DD 025052a01H
-	DD	010e2313H
-	DD	07007002dH
-	DD	05006H
+$unwind$grass_wither DD 025052f01H
+	DD	01132318H
+	DD	0700c0021H
+	DD	0500bH
 xdata	ENDS
 ;	COMDAT CONST
 CONST	SEGMENT
-grass_field_update$rtcName$0 DB 069H
+grass_wither$rtcName$0 DB 069H
 	DB	06eH
 	DB	064H
 	DB	065H
 	DB	078H
 	DB	00H
 	ORG $+10
-grass_field_update$rtcVarDesc DD 048H
+grass_wither$rtcVarDesc DD 028H
 	DD	08H
-	DQ	FLAT:grass_field_update$rtcName$0
+	DQ	FLAT:grass_wither$rtcName$0
 	ORG $+48
-grass_field_update$rtcFrameData DD 01H
+grass_wither$rtcFrameData DD 01H
 	DD	00H
-	DQ	FLAT:grass_field_update$rtcVarDesc
+	DQ	FLAT:grass_wither$rtcVarDesc
+CONST	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grass_grow DD 025052f01H
+	DD	01132318H
+	DD	0700c001dH
+	DD	0500bH
+xdata	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grass_field_update DD 025052a01H
+	DD	010e2313H
+	DD	070070029H
+	DD	05006H
+xdata	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grass_act DD 025052f01H
+	DD	01132318H
+	DD	0700c001fH
+	DD	0500bH
+xdata	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grass_sense DD 025052f01H
+	DD	01132318H
+	DD	0700c0021H
+	DD	0500bH
+xdata	ENDS
+;	COMDAT CONST
+CONST	SEGMENT
+grass_sense$rtcName$0 DB 069H
+	DB	06eH
+	DB	064H
+	DB	065H
+	DB	078H
+	DB	00H
+	ORG $+10
+grass_sense$rtcVarDesc DD 028H
+	DD	08H
+	DQ	FLAT:grass_sense$rtcName$0
+	ORG $+48
+grass_sense$rtcFrameData DD 01H
+	DD	00H
+	DQ	FLAT:grass_sense$rtcVarDesc
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
@@ -225,7 +329,7 @@ _TEXT	SEGMENT
 field$ = 224
 grass_field_clean PROC					; COMDAT
 
-; 145  : {
+; 230  : {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
@@ -241,25 +345,25 @@ $LN4:
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 146  :     if(field->pool)
+; 231  :     if(field->pool)
 
 	mov	rax, QWORD PTR field$[rbp]
 	cmp	QWORD PTR [rax+24], 0
 	je	SHORT $LN2@grass_fiel
 
-; 147  :         free(field->pool);
+; 232  :         free(field->pool);
 
 	mov	rax, QWORD PTR field$[rbp]
 	mov	rcx, QWORD PTR [rax+24]
 	call	QWORD PTR __imp_free
 $LN2@grass_fiel:
 
-; 148  :     field->pool = NULL;
+; 233  :     field->pool = NULL;
 
 	mov	rax, QWORD PTR field$[rbp]
 	mov	QWORD PTR [rax+24], 0
 
-; 149  : }
+; 234  : }
 
 	lea	rsp, QWORD PTR [rbp+200]
 	pop	rdi
@@ -272,119 +376,225 @@ _TEXT	ENDS
 ;	COMDAT grass_field_draw
 _TEXT	SEGMENT
 temp$ = 8
-y$1 = 36
-x$2 = 68
-p_renderer$ = 320
-p_texture$ = 328
-p_field$ = 336
+y$4 = 36
+x$5 = 68
+other_Rect$6 = 104
+tv86 = 324
+__$ArrayPad$ = 328
+p_renderer$ = 368
+p_field$ = 376
 grass_field_draw PROC					; COMDAT
 
-; 130  : {
+; 195  : {
 
-$LN9:
-	mov	QWORD PTR [rsp+24], r8
+$LN14:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	push	rbp
+	push	rsi
 	push	rdi
-	sub	rsp, 328				; 00000148H
-	lea	rbp, QWORD PTR [rsp+32]
+	sub	rsp, 384				; 00000180H
+	lea	rbp, QWORD PTR [rsp+48]
 	mov	rdi, rsp
-	mov	ecx, 82					; 00000052H
+	mov	ecx, 96					; 00000060H
 	mov	eax, -858993460				; ccccccccH
 	rep stosd
-	mov	rcx, QWORD PTR [rsp+360]
+	mov	rcx, QWORD PTR [rsp+424]
+	mov	rax, QWORD PTR __security_cookie
+	xor	rax, rbp
+	mov	QWORD PTR __$ArrayPad$[rbp], rax
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 131  :     grass* temp;
-; 132  :     for(int y = 0; y < p_field->dimensions.y; y++)
+; 196  :     grass* temp;
+; 197  :     for(int y = 0; y < p_field->dimensions.y; y++)
 
-	mov	DWORD PTR y$1[rbp], 0
+	mov	DWORD PTR y$4[rbp], 0
 	jmp	SHORT $LN4@grass_fiel
 $LN2@grass_fiel:
-	mov	eax, DWORD PTR y$1[rbp]
+	mov	eax, DWORD PTR y$4[rbp]
 	inc	eax
-	mov	DWORD PTR y$1[rbp], eax
+	mov	DWORD PTR y$4[rbp], eax
 $LN4@grass_fiel:
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	eax, DWORD PTR [rax+36]
-	cmp	DWORD PTR y$1[rbp], eax
-	jge	SHORT $LN3@grass_fiel
+	cmp	DWORD PTR y$4[rbp], eax
+	jge	$LN3@grass_fiel
 
-; 133  :     {
-; 134  :         for(int x = 0; x < p_field->dimensions.x; x++)
+; 198  :     {
+; 199  :         for(int x = 0; x < p_field->dimensions.x; x++)
 
-	mov	DWORD PTR x$2[rbp], 0
+	mov	DWORD PTR x$5[rbp], 0
 	jmp	SHORT $LN7@grass_fiel
 $LN5@grass_fiel:
-	mov	eax, DWORD PTR x$2[rbp]
+	mov	eax, DWORD PTR x$5[rbp]
 	inc	eax
-	mov	DWORD PTR x$2[rbp], eax
+	mov	DWORD PTR x$5[rbp], eax
 $LN7@grass_fiel:
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	eax, DWORD PTR [rax+32]
-	cmp	DWORD PTR x$2[rbp], eax
-	jge	SHORT $LN6@grass_fiel
+	cmp	DWORD PTR x$5[rbp], eax
+	jge	$LN6@grass_fiel
 
-; 135  :         {
-; 136  :             temp = &p_field->pool[y * p_field->dimensions.x + x];
+; 200  :         {
+; 201  :             temp = &p_field->pool[y * p_field->dimensions.x + x];
 
 	mov	rax, QWORD PTR p_field$[rbp]
-	mov	ecx, DWORD PTR y$1[rbp]
+	mov	ecx, DWORD PTR y$4[rbp]
 	imul	ecx, DWORD PTR [rax+32]
 	mov	eax, ecx
-	add	eax, DWORD PTR x$2[rbp]
+	add	eax, DWORD PTR x$5[rbp]
 	cdqe
-	imul	rax, rax, 40				; 00000028H
+	imul	rax, rax, 80				; 00000050H
 	mov	rcx, QWORD PTR p_field$[rbp]
 	add	rax, QWORD PTR [rcx+24]
 	mov	QWORD PTR temp$[rbp], rax
 
-; 137  :             SDL_RenderCopy(p_renderer,
+; 202  :             SDL_RenderCopy(p_renderer,
 
 	mov	rax, QWORD PTR temp$[rbp]
-	add	rax, 24
+	add	rax, 56					; 00000038H
 	mov	rcx, QWORD PTR temp$[rbp]
-	add	rcx, 8
+	mov	rcx, QWORD PTR [rcx+32]
 	mov	r9, rax
 	mov	r8, rcx
-	mov	rdx, QWORD PTR p_texture$[rbp]
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	rdx, QWORD PTR [rax+16]
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_RenderCopy
 
-; 138  :                            p_texture,
-; 139  :                            &temp->source,
-; 140  :                            &temp->destination);
-; 141  :         }
+; 203  :                            temp->anim.texture,
+; 204  :                            &temp->anim.current->data.rect,
+; 205  :                            &temp->destination);
+; 206  : 
+; 207  : 
+; 208  :             switch(temp->state)
 
-	jmp	SHORT $LN5@grass_fiel
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	eax, DWORD PTR [rax+76]
+	mov	DWORD PTR tv86[rbp], eax
+	cmp	DWORD PTR tv86[rbp], 0
+	je	SHORT $LN10@grass_fiel
+	cmp	DWORD PTR tv86[rbp], 1
+	je	SHORT $LN11@grass_fiel
+	cmp	DWORD PTR tv86[rbp], 2
+	je	SHORT $LN12@grass_fiel
+	jmp	SHORT $LN8@grass_fiel
+$LN10@grass_fiel:
+
+; 209  :             {
+; 210  :                 case GROWING:
+; 211  :                     SDL_SetRenderDrawColor(p_renderer, 255, 255, 0, 255);
+
+	mov	BYTE PTR [rsp+32], 255			; 000000ffH
+	xor	r9d, r9d
+	mov	r8b, 255				; 000000ffH
+	mov	dl, 255					; 000000ffH
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_SetRenderDrawColor
+
+; 212  :                     break;
+
+	jmp	SHORT $LN8@grass_fiel
+$LN11@grass_fiel:
+
+; 213  : 
+; 214  :                 case SPREADING:
+; 215  :                     SDL_SetRenderDrawColor(p_renderer, 255, 0, 255, 255);
+
+	mov	BYTE PTR [rsp+32], 255			; 000000ffH
+	mov	r9b, 255				; 000000ffH
+	xor	r8d, r8d
+	mov	dl, 255					; 000000ffH
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_SetRenderDrawColor
+
+; 216  :                     break;
+
+	jmp	SHORT $LN8@grass_fiel
+$LN12@grass_fiel:
+
+; 217  : 
+; 218  :                 case WITHERING:
+; 219  :                     SDL_SetRenderDrawColor(p_renderer, 0, 255, 255, 255);
+
+	mov	BYTE PTR [rsp+32], 255			; 000000ffH
+	mov	r9b, 255				; 000000ffH
+	mov	r8b, 255				; 000000ffH
+	xor	edx, edx
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_SetRenderDrawColor
+$LN8@grass_fiel:
+
+; 220  :                     break;
+; 221  :             }
+; 222  :             SDL_Rect other_Rect = temp->destination;
+
+	lea	rax, QWORD PTR other_Rect$6[rbp]
+	mov	rcx, QWORD PTR temp$[rbp]
+	mov	rdi, rax
+	lea	rsi, QWORD PTR [rcx+56]
+	mov	ecx, 16
+	rep movsb
+
+; 223  :             other_Rect.w /= 2;
+
+	mov	eax, DWORD PTR other_Rect$6[rbp+8]
+	cdq
+	sub	eax, edx
+	sar	eax, 1
+	mov	DWORD PTR other_Rect$6[rbp+8], eax
+
+; 224  :             other_Rect.h /= 2;
+
+	mov	eax, DWORD PTR other_Rect$6[rbp+12]
+	cdq
+	sub	eax, edx
+	sar	eax, 1
+	mov	DWORD PTR other_Rect$6[rbp+12], eax
+
+; 225  :             SDL_RenderFillRect(p_renderer, &other_Rect);
+
+	lea	rdx, QWORD PTR other_Rect$6[rbp]
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_RenderFillRect
+
+; 226  :         }
+
+	jmp	$LN5@grass_fiel
 $LN6@grass_fiel:
 
-; 142  :     }
+; 227  :     }
 
 	jmp	$LN2@grass_fiel
 $LN3@grass_fiel:
 
-; 143  : }
+; 228  : }
 
-	lea	rsp, QWORD PTR [rbp+296]
+	lea	rcx, QWORD PTR [rbp-48]
+	lea	rdx, OFFSET FLAT:grass_field_draw$rtcFrameData
+	call	_RTC_CheckStackVars
+	mov	rcx, QWORD PTR __$ArrayPad$[rbp]
+	xor	rcx, rbp
+	call	__security_check_cookie
+	lea	rsp, QWORD PTR [rbp+336]
 	pop	rdi
+	pop	rsi
 	pop	rbp
 	ret	0
 grass_field_draw ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
-;	COMDAT grass_field_toggle_active_at
+;	COMDAT grass_field_toggle_alive_at
 _TEXT	SEGMENT
 temp$ = 8
 p_field$ = 256
 p_index$ = 264
 p_value$ = 272
-grass_field_toggle_active_at PROC			; COMDAT
+grass_field_toggle_alive_at PROC			; COMDAT
 
-; 109  : {
+; 171  : {
 
 $LN6:
 	mov	BYTE PTR [rsp+24], r8b
@@ -402,7 +612,7 @@ $LN6:
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 110  :     grass* temp = &p_field->pool[p_index.y * p_field->dimensions.x + p_index.x];
+; 172  :     grass* temp = &p_field->pool[p_index.y * p_field->dimensions.x + p_index.x];
 
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	ecx, DWORD PTR p_index$[rbp+4]
@@ -410,86 +620,65 @@ $LN6:
 	mov	eax, ecx
 	add	eax, DWORD PTR p_index$[rbp]
 	cdqe
-	imul	rax, rax, 40				; 00000028H
+	imul	rax, rax, 80				; 00000050H
 	mov	rcx, QWORD PTR p_field$[rbp]
 	add	rax, QWORD PTR [rcx+24]
 	mov	QWORD PTR temp$[rbp], rax
 
-; 111  :     if(!(temp->grow_level > 0) && p_value)
+; 173  :     if(!(temp->grow_level > 0) && p_value && !temp->alive)
 
 	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax], 0
-	jg	SHORT $LN2@grass_fiel
+	cmp	DWORD PTR [rax+4], 0
+	jg	$LN2@grass_fiel
 	movzx	eax, BYTE PTR p_value$[rbp]
 	test	eax, eax
-	je	SHORT $LN2@grass_fiel
+	je	$LN2@grass_fiel
+	mov	rax, QWORD PTR temp$[rbp]
+	movzx	eax, BYTE PTR [rax]
+	test	eax, eax
+	jne	SHORT $LN2@grass_fiel
 
-; 112  :     {
-; 113  :         temp->timer         = p_field->grow_timer_reset_value;
+; 174  :     {
+; 175  :         temp->timer = p_field->grow_timer_reset_value;
 
 	mov	rax, QWORD PTR temp$[rbp]
 	mov	rcx, QWORD PTR p_field$[rbp]
 	mov	ecx, DWORD PTR [rcx]
-	mov	DWORD PTR [rax+4], ecx
+	mov	DWORD PTR [rax+8], ecx
 
-; 114  :         temp->source.x      += p_field->source_index_step;
-
-	mov	rax, QWORD PTR temp$[rbp]
-	mov	eax, DWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_field$[rbp]
-	add	eax, DWORD PTR [rcx+8]
-	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+8], eax
-
-; 115  :         temp->source.x      *= p_value;
-
-	movzx	eax, BYTE PTR p_value$[rbp]
-	mov	rcx, QWORD PTR temp$[rbp]
-	mov	ecx, DWORD PTR [rcx+8]
-	imul	ecx, eax
-	mov	eax, ecx
-	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+8], eax
-
-; 116  :         temp->grow_level++;
+; 176  :         temp->grow_level++;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	mov	eax, DWORD PTR [rax]
+	mov	eax, DWORD PTR [rax+4]
 	inc	eax
 	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx], eax
+	mov	DWORD PTR [rcx+4], eax
 
-; 117  :     }
-
-	jmp	SHORT $LN3@grass_fiel
-$LN2@grass_fiel:
-
-; 118  :     else if(!p_value)
-
-	movzx	eax, BYTE PTR p_value$[rbp]
-	test	eax, eax
-	jne	SHORT $LN4@grass_fiel
-
-; 119  :     {
-; 120  :         temp->timer      = NULL;
+; 177  :         temp->life_time = p_field->max_life_time;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rax+4], 0
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx+8]
+	mov	DWORD PTR [rax+12], ecx
 
-; 121  :         temp->source.x   = NULL;
-
-	mov	rax, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rax+8], 0
-
-; 122  :         temp->grow_level = NULL;
+; 178  :         temp->alive  = true;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rax], 0
-$LN4@grass_fiel:
-$LN3@grass_fiel:
+	mov	BYTE PTR [rax], 1
 
-; 123  :     }
-; 124  :     grid_set_data_at(p_field->grid_layer, p_index, HAS_GRASS, p_value);
+; 179  :         animation_step_forward(&temp->anim);
+
+	mov	rax, QWORD PTR temp$[rbp]
+	add	rax, 16
+	mov	rcx, rax
+	call	animation_step_forward
+
+; 180  :         temp->state = GROWING;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	DWORD PTR [rax+76], 0
+
+; 181  :         grid_set_data_at(p_field->grid_layer, p_index, HAS_GRASS, p_value);
 
 	movzx	eax, BYTE PTR p_value$[rbp]
 	mov	r9d, eax
@@ -499,23 +688,76 @@ $LN3@grass_fiel:
 	mov	rcx, QWORD PTR [rax+16]
 	call	grid_set_data_at
 
-; 125  :     grid_set_data_at(p_field->grid_layer, p_index, GRASS_LEVEL, temp->grow_level);
+; 182  :     }
+
+	jmp	SHORT $LN3@grass_fiel
+$LN2@grass_fiel:
+
+; 183  :     else if(!p_value && temp->alive)
+
+	movzx	eax, BYTE PTR p_value$[rbp]
+	test	eax, eax
+	jne	SHORT $LN4@grass_fiel
+	mov	rax, QWORD PTR temp$[rbp]
+	movzx	eax, BYTE PTR [rax]
+	test	eax, eax
+	je	SHORT $LN4@grass_fiel
+
+; 184  :     {
+; 185  :         temp->timer = p_field->grow_timer_reset_value;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	mov	r9d, DWORD PTR [rax]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx]
+	mov	DWORD PTR [rax+8], ecx
+
+; 186  :         temp->alive = false;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	BYTE PTR [rax], 0
+
+; 187  :         temp->life_time = p_field->max_life_time;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx+8]
+	mov	DWORD PTR [rax+12], ecx
+
+; 188  :         temp->grow_level--;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	eax, DWORD PTR [rax+4]
+	dec	eax
+	mov	rcx, QWORD PTR temp$[rbp]
+	mov	DWORD PTR [rcx+4], eax
+
+; 189  :         animation_step_backwards(&temp->anim);
+
+	mov	rax, QWORD PTR temp$[rbp]
+	add	rax, 16
+	mov	rcx, rax
+	call	animation_step_backwards
+$LN4@grass_fiel:
+$LN3@grass_fiel:
+
+; 190  :     }
+; 191  :     grid_set_data_at(p_field->grid_layer, p_index, GRASS_LEVEL, temp->grow_level);
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	r9d, DWORD PTR [rax+4]
 	mov	r8d, 7
 	mov	rdx, QWORD PTR p_index$[rbp]
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	rcx, QWORD PTR [rax+16]
 	call	grid_set_data_at
 
-; 126  : }
+; 192  : }
 
 	lea	rsp, QWORD PTR [rbp+232]
 	pop	rdi
 	pop	rbp
 	ret	0
-grass_field_toggle_active_at ENDP
+grass_field_toggle_alive_at ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
@@ -526,10 +768,10 @@ open_count$ = 68
 random_index$6 = 104
 __$ArrayPad$ = 312
 p_field$ = 352
-p_index$ = 360
+p_grass$ = 360
 grass_spread PROC					; COMDAT
 
-; 95   : {
+; 152  : {
 
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
@@ -549,13 +791,18 @@ $LN4:
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 96   :     vector2 adj_nodes[NUM_DIRS];
-; 97   :     int     open_count;
-; 98   : 
-; 99   :     if(grid_open_neighbours_at(p_field->grid_layer, adj_nodes, &open_count, p_index, HAS_GRASS))
+; 153  :     vector2 adj_nodes[NUM_DIRS];
+; 154  :     int     open_count;
+; 155  : 
+; 156  :     if(grid_open_neighbours_at(p_field->grid_layer, 
 
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rdx, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR p_field$[rbp]
+	mov	rcx, QWORD PTR [rax+16]
+	call	grid_world_to_grid
 	mov	DWORD PTR [rsp+32], 8
-	mov	r9, QWORD PTR p_index$[rbp]
+	mov	r9, rax
 	lea	r8, QWORD PTR open_count$[rbp]
 	lea	rdx, QWORD PTR adj_nodes$[rbp]
 	mov	rax, QWORD PTR p_field$[rbp]
@@ -565,8 +812,13 @@ $LN4:
 	test	eax, eax
 	je	SHORT $LN2@grass_spre
 
-; 100  :     {
-; 101  :         vector2 random_index = adj_nodes[rand() % open_count];
+; 157  :                                adj_nodes, 
+; 158  :                                &open_count, 
+; 159  :                                grid_world_to_grid(p_field->grid_layer,
+; 160  :                                                   *(vector2*)&p_grass->destination),
+; 161  :                                HAS_GRASS))
+; 162  :     {
+; 163  :         vector2 random_index = adj_nodes[rand() % open_count];
 
 	call	rand
 	cdq
@@ -576,16 +828,16 @@ $LN4:
 	mov	rax, QWORD PTR adj_nodes$[rbp+rax*8]
 	mov	QWORD PTR random_index$6[rbp], rax
 
-; 102  :         grass_field_toggle_active_at(p_field, random_index, true);
+; 164  :         grass_field_toggle_alive_at(p_field, random_index, true);
 
 	mov	r8b, 1
 	mov	rdx, QWORD PTR random_index$6[rbp]
 	mov	rcx, QWORD PTR p_field$[rbp]
-	call	grass_field_toggle_active_at
+	call	grass_field_toggle_alive_at
 $LN2@grass_spre:
 
-; 103  :     }
-; 104  : }
+; 165  :     }
+; 166  : }
 
 	lea	rcx, QWORD PTR [rbp-48]
 	lea	rdx, OFFSET FLAT:grass_spread$rtcFrameData
@@ -601,17 +853,114 @@ grass_spread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
+;	COMDAT grass_wither
+_TEXT	SEGMENT
+index$ = 8
+tv83 = 212
+p_grid$ = 256
+p_grass$ = 264
+grass_wither PROC					; COMDAT
+
+; 133  : {
+
+$LN5:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	push	rbp
+	push	rdi
+	sub	rsp, 264				; 00000108H
+	lea	rbp, QWORD PTR [rsp+32]
+	mov	rdi, rsp
+	mov	ecx, 66					; 00000042H
+	mov	eax, -858993460				; ccccccccH
+	rep stosd
+	mov	rcx, QWORD PTR [rsp+296]
+	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
+	call	__CheckForDebuggerJustMyCode
+
+; 134  :     vector2 index = grid_world_to_grid(p_grid, *(vector2*)&p_grass->destination);
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rdx, QWORD PTR [rax+56]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_world_to_grid
+	mov	QWORD PTR index$[rbp], rax
+
+; 135  :     p_grass->grow_level--;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	eax, DWORD PTR [rax+4]
+	dec	eax
+	mov	rcx, QWORD PTR p_grass$[rbp]
+	mov	DWORD PTR [rcx+4], eax
+
+; 136  :     p_grass->alive = false;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	BYTE PTR [rax], 0
+
+; 137  :     animation_step_backwards(&p_grass->anim);
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	add	rax, 16
+	mov	rcx, rax
+	call	animation_step_backwards
+
+; 138  : 
+; 139  :     grid_set_data_at(p_grid,
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	r9d, DWORD PTR [rax+4]
+	mov	r8d, 7
+	mov	rdx, QWORD PTR index$[rbp]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_set_data_at
+
+; 140  :                      index,
+; 141  :                      GRASS_LEVEL,
+; 142  :                      p_grass->grow_level);
+; 143  : 
+; 144  :     grid_set_data_at(p_grid,
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	cmp	DWORD PTR [rax+4], 0
+	je	SHORT $LN3@grass_with
+	mov	DWORD PTR tv83[rbp], 1
+	jmp	SHORT $LN4@grass_with
+$LN3@grass_with:
+	mov	DWORD PTR tv83[rbp], 0
+$LN4@grass_with:
+	mov	r9d, DWORD PTR tv83[rbp]
+	mov	r8d, 8
+	mov	rdx, QWORD PTR index$[rbp]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_set_data_at
+
+; 145  :                      index,
+; 146  :                      HAS_GRASS,
+; 147  :                      p_grass->grow_level != 0);
+; 148  : }
+
+	lea	rcx, QWORD PTR [rbp-32]
+	lea	rdx, OFFSET FLAT:grass_wither$rtcFrameData
+	call	_RTC_CheckStackVars
+	lea	rsp, QWORD PTR [rbp+232]
+	pop	rdi
+	pop	rbp
+	ret	0
+grass_wither ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp /RTCsu /ZI
+; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
 ;	COMDAT grass_grow
 _TEXT	SEGMENT
-p_field$ = 224
+p_grid$ = 224
 p_grass$ = 232
-p_index$ = 240
 grass_grow PROC						; COMDAT
 
-; 84   : {
+; 121  : {
 
 $LN3:
-	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	push	rbp
@@ -626,37 +975,39 @@ $LN3:
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 85   :     p_grass->grow_level++;
+; 122  :     p_grass->grow_level++;
 
 	mov	rax, QWORD PTR p_grass$[rbp]
-	mov	eax, DWORD PTR [rax]
+	mov	eax, DWORD PTR [rax+4]
 	inc	eax
 	mov	rcx, QWORD PTR p_grass$[rbp]
-	mov	DWORD PTR [rcx], eax
+	mov	DWORD PTR [rcx+4], eax
 
-; 86   :     p_grass->source.x += p_field->source_index_step;;
+; 123  :     animation_step_forward(&p_grass->anim);
 
 	mov	rax, QWORD PTR p_grass$[rbp]
-	mov	eax, DWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_field$[rbp]
-	add	eax, DWORD PTR [rcx+8]
+	add	rax, 16
+	mov	rcx, rax
+	call	animation_step_forward
+
+; 124  : 
+; 125  :     grid_set_data_at(p_grid,
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rdx, QWORD PTR [rax+56]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_world_to_grid
 	mov	rcx, QWORD PTR p_grass$[rbp]
-	mov	DWORD PTR [rcx+8], eax
-
-; 87   : 
-; 88   :     grid_set_data_at(p_field->grid_layer, 
-
-	mov	rax, QWORD PTR p_grass$[rbp]
-	mov	r9d, DWORD PTR [rax]
+	mov	r9d, DWORD PTR [rcx+4]
 	mov	r8d, 7
-	mov	rdx, QWORD PTR p_index$[rbp]
-	mov	rax, QWORD PTR p_field$[rbp]
-	mov	rcx, QWORD PTR [rax+16]
+	mov	rdx, rax
+	mov	rcx, QWORD PTR p_grid$[rbp]
 	call	grid_set_data_at
 
-; 89   :                      p_index, GRASS_LEVEL, 
-; 90   :                      p_grass->grow_level);
-; 91   : }
+; 126  :                      grid_world_to_grid(p_grid, *(vector2*)&p_grass->destination), 
+; 127  :                      GRASS_LEVEL, 
+; 128  :                      p_grass->grow_level);
+; 129  : }
 
 	lea	rsp, QWORD PTR [rbp+200]
 	pop	rdi
@@ -669,210 +1020,381 @@ _TEXT	ENDS
 ;	COMDAT grass_field_update
 _TEXT	SEGMENT
 temp$ = 8
-index$ = 40
-y$4 = 68
-x$5 = 100
-tv91 = 308
-p_field$ = 352
+y$1 = 36
+x$2 = 68
+p_field$ = 320
 grass_field_update PROC					; COMDAT
 
-; 47   : {
+; 101  : {
 
-$LN16:
+$LN11:
 	mov	QWORD PTR [rsp+8], rcx
 	push	rbp
 	push	rdi
-	sub	rsp, 360				; 00000168H
+	sub	rsp, 328				; 00000148H
 	lea	rbp, QWORD PTR [rsp+32]
 	mov	rdi, rsp
-	mov	ecx, 90					; 0000005aH
+	mov	ecx, 82					; 00000052H
 	mov	eax, -858993460				; ccccccccH
 	rep stosd
-	mov	rcx, QWORD PTR [rsp+392]
+	mov	rcx, QWORD PTR [rsp+360]
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 48   :     grass*  temp;
-; 49   :     vector2 index;
-; 50   : 
-; 51   :     for(int y = 0; y < p_field->dimensions.y; y++)
+; 102  :     grass*  temp;
+; 103  : 
+; 104  :     for(int y = 0; y < p_field->dimensions.y; y++)
 
-	mov	DWORD PTR y$4[rbp], 0
+	mov	DWORD PTR y$1[rbp], 0
 	jmp	SHORT $LN4@grass_fiel
 $LN2@grass_fiel:
-	mov	eax, DWORD PTR y$4[rbp]
+	mov	eax, DWORD PTR y$1[rbp]
 	inc	eax
-	mov	DWORD PTR y$4[rbp], eax
+	mov	DWORD PTR y$1[rbp], eax
 $LN4@grass_fiel:
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	eax, DWORD PTR [rax+36]
-	cmp	DWORD PTR y$4[rbp], eax
+	cmp	DWORD PTR y$1[rbp], eax
 	jge	$LN3@grass_fiel
 
-; 52   :     {
-; 53   :         for(int x = 0; x < p_field->dimensions.x; x++)
+; 105  :     {
+; 106  :         for(int x = 0; x < p_field->dimensions.x; x++)
 
-	mov	DWORD PTR x$5[rbp], 0
+	mov	DWORD PTR x$2[rbp], 0
 	jmp	SHORT $LN7@grass_fiel
 $LN5@grass_fiel:
-	mov	eax, DWORD PTR x$5[rbp]
+	mov	eax, DWORD PTR x$2[rbp]
 	inc	eax
-	mov	DWORD PTR x$5[rbp], eax
+	mov	DWORD PTR x$2[rbp], eax
 $LN7@grass_fiel:
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	eax, DWORD PTR [rax+32]
-	cmp	DWORD PTR x$5[rbp], eax
+	cmp	DWORD PTR x$2[rbp], eax
 	jge	$LN6@grass_fiel
 
-; 54   :         {
-; 55   :             temp = &p_field->pool[y * p_field->dimensions.x + x];
+; 107  :         {
+; 108  :             temp = &p_field->pool[y * p_field->dimensions.x + x];
 
 	mov	rax, QWORD PTR p_field$[rbp]
-	mov	ecx, DWORD PTR y$4[rbp]
+	mov	ecx, DWORD PTR y$1[rbp]
 	imul	ecx, DWORD PTR [rax+32]
 	mov	eax, ecx
-	add	eax, DWORD PTR x$5[rbp]
+	add	eax, DWORD PTR x$2[rbp]
 	cdqe
-	imul	rax, rax, 40				; 00000028H
+	imul	rax, rax, 80				; 00000050H
 	mov	rcx, QWORD PTR p_field$[rbp]
 	add	rax, QWORD PTR [rcx+24]
 	mov	QWORD PTR temp$[rbp], rax
 
-; 56   : 
-; 57   :             if(temp->grow_level > 0 && 
-; 58   :                temp->grow_level < 5 &&
+; 109  :             if(!(temp->grow_level == NULL && temp->alive == false)) // If grass is entirely inactive, dont do anything 
 
 	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax], 0
-	jle	SHORT $LN8@grass_fiel
+	movsxd	rax, DWORD PTR [rax+4]
+	test	rax, rax
+	jne	SHORT $LN9@grass_fiel
 	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax], 5
-	jge	SHORT $LN8@grass_fiel
-	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax+4], 0
-	jge	SHORT $LN8@grass_fiel
-
-; 59   :                temp->timer < 0)
-; 60   :             {
-; 61   :                 index.x = x;
-
-	mov	eax, DWORD PTR x$5[rbp]
-	mov	DWORD PTR index$[rbp], eax
-
-; 62   :                 index.y = y;
-
-	mov	eax, DWORD PTR y$4[rbp]
-	mov	DWORD PTR index$[rbp+4], eax
-
-; 63   :                 grass_grow(p_field, temp, index);
-
-	mov	r8, QWORD PTR index$[rbp]
-	mov	rdx, QWORD PTR temp$[rbp]
-	mov	rcx, QWORD PTR p_field$[rbp]
-	call	grass_grow
-
-; 64   :                 temp->timer = p_field->grow_timer_reset_value + 
-
-	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax], 5
-	jl	SHORT $LN14@grass_fiel
-	mov	DWORD PTR tv91[rbp], 1
-	jmp	SHORT $LN15@grass_fiel
-$LN14@grass_fiel:
-	mov	DWORD PTR tv91[rbp], 0
-$LN15@grass_fiel:
-	mov	rax, QWORD PTR p_field$[rbp]
-	mov	ecx, DWORD PTR tv91[rbp]
-	imul	ecx, DWORD PTR [rax+4]
-	mov	eax, ecx
-	mov	rcx, QWORD PTR p_field$[rbp]
-	add	eax, DWORD PTR [rcx]
-	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+4], eax
-
-; 65   :                               ((temp->grow_level >= 5) * 
-; 66   :                               p_field->spread_timer_reset_value);
-; 67   :             }
-
-	jmp	SHORT $LN9@grass_fiel
-$LN8@grass_fiel:
-
-; 68   :             else if(temp->grow_level >= 5 &&
-
-	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax], 5
-	jl	SHORT $LN10@grass_fiel
-	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax+4], 0
-	jge	SHORT $LN10@grass_fiel
-
-; 69   :                     temp->timer < 0)
-; 70   :             {
-; 71   :                 index.x = x;
-
-	mov	eax, DWORD PTR x$5[rbp]
-	mov	DWORD PTR index$[rbp], eax
-
-; 72   :                 index.y = y;
-
-	mov	eax, DWORD PTR y$4[rbp]
-	mov	DWORD PTR index$[rbp+4], eax
-
-; 73   :                 grass_spread(p_field, index);
-
-	mov	rdx, QWORD PTR index$[rbp]
-	mov	rcx, QWORD PTR p_field$[rbp]
-	call	grass_spread
-
-; 74   :                 temp->timer = p_field->spread_timer_reset_value;
-
-	mov	rax, QWORD PTR temp$[rbp]
-	mov	rcx, QWORD PTR p_field$[rbp]
-	mov	ecx, DWORD PTR [rcx+4]
-	mov	DWORD PTR [rax+4], ecx
-
-; 75   :             }
-
-	jmp	SHORT $LN11@grass_fiel
-$LN10@grass_fiel:
-
-; 76   :             else if(temp->timer >= 0)
-
-	mov	rax, QWORD PTR temp$[rbp]
-	cmp	DWORD PTR [rax+4], 0
-	jl	SHORT $LN12@grass_fiel
-
-; 77   :                 temp->timer--;
-
-	mov	rax, QWORD PTR temp$[rbp]
-	mov	eax, DWORD PTR [rax+4]
-	dec	eax
-	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+4], eax
-$LN12@grass_fiel:
-$LN11@grass_fiel:
+	movzx	eax, BYTE PTR [rax]
+	test	eax, eax
+	je	SHORT $LN8@grass_fiel
 $LN9@grass_fiel:
 
-; 78   :         }
+; 110  :             {
+; 111  :                 temp->sense = grass_sense(temp, p_field->grid_layer);
+
+	mov	rax, QWORD PTR p_field$[rbp]
+	mov	rdx, QWORD PTR [rax+16]
+	mov	rcx, QWORD PTR temp$[rbp]
+	call	grass_sense
+	mov	rcx, QWORD PTR temp$[rbp]
+	mov	DWORD PTR [rcx+72], eax
+
+; 112  :                 temp->state = GRASS_DECIDE_TABLE[temp->sense][temp->state];
+
+	mov	rax, QWORD PTR temp$[rbp]
+	movsxd	rax, DWORD PTR [rax+72]
+	imul	rax, rax, 12
+	lea	rcx, OFFSET FLAT:GRASS_DECIDE_TABLE
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR temp$[rbp]
+	movsxd	rcx, DWORD PTR [rcx+76]
+	mov	rdx, QWORD PTR temp$[rbp]
+	mov	eax, DWORD PTR [rax+rcx*4]
+	mov	DWORD PTR [rdx+76], eax
+
+; 113  :                 grass_act(temp, p_field);
+
+	mov	rdx, QWORD PTR p_field$[rbp]
+	mov	rcx, QWORD PTR temp$[rbp]
+	call	grass_act
+$LN8@grass_fiel:
+
+; 114  :             }
+; 115  :         }
 
 	jmp	$LN5@grass_fiel
 $LN6@grass_fiel:
 
-; 79   :     }
+; 116  :     }
 
 	jmp	$LN2@grass_fiel
 $LN3@grass_fiel:
 
-; 80   : }
+; 117  : }
 
-	lea	rcx, QWORD PTR [rbp-32]
-	lea	rdx, OFFSET FLAT:grass_field_update$rtcFrameData
-	call	_RTC_CheckStackVars
-	lea	rsp, QWORD PTR [rbp+328]
+	lea	rsp, QWORD PTR [rbp+296]
 	pop	rdi
 	pop	rbp
 	ret	0
 grass_field_update ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp /RTCsu /ZI
+; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
+;	COMDAT grass_act
+_TEXT	SEGMENT
+tv67 = 192
+p_grass$ = 240
+p_field$ = 248
+grass_act PROC						; COMDAT
+
+; 72   : {
+
+$LN11:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	push	rbp
+	push	rdi
+	sub	rsp, 248				; 000000f8H
+	lea	rbp, QWORD PTR [rsp+32]
+	mov	rdi, rsp
+	mov	ecx, 62					; 0000003eH
+	mov	eax, -858993460				; ccccccccH
+	rep stosd
+	mov	rcx, QWORD PTR [rsp+280]
+	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
+	call	__CheckForDebuggerJustMyCode
+
+; 73   :     if(p_grass->timer < 0)
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	cmp	DWORD PTR [rax+8], 0
+	jge	$LN4@grass_act
+
+; 74   :     { 
+; 75   :         switch(p_grass->state)
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	eax, DWORD PTR [rax+76]
+	mov	DWORD PTR tv67[rbp], eax
+	cmp	DWORD PTR tv67[rbp], 0
+	je	SHORT $LN6@grass_act
+	cmp	DWORD PTR tv67[rbp], 1
+	je	SHORT $LN7@grass_act
+	cmp	DWORD PTR tv67[rbp], 2
+	je	SHORT $LN8@grass_act
+	jmp	SHORT $LN2@grass_act
+$LN6@grass_act:
+
+; 76   :         {
+; 77   :             case GROWING:
+; 78   :                 grass_grow(p_field->grid_layer, p_grass);
+
+	mov	rdx, QWORD PTR p_grass$[rbp]
+	mov	rax, QWORD PTR p_field$[rbp]
+	mov	rcx, QWORD PTR [rax+16]
+	call	grass_grow
+
+; 79   :                 p_grass->timer = p_field->grow_timer_reset_value;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx]
+	mov	DWORD PTR [rax+8], ecx
+
+; 80   :                 break;
+
+	jmp	SHORT $LN2@grass_act
+$LN7@grass_act:
+
+; 81   : 
+; 82   :             case SPREADING:
+; 83   :                 grass_spread(p_field, p_grass);
+
+	mov	rdx, QWORD PTR p_grass$[rbp]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	call	grass_spread
+
+; 84   :                 p_grass->timer = p_field->spread_timer_reset_value;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx+4]
+	mov	DWORD PTR [rax+8], ecx
+
+; 85   :                 break;
+
+	jmp	SHORT $LN2@grass_act
+$LN8@grass_act:
+
+; 86   : 
+; 87   :             case WITHERING:
+; 88   :                 grass_wither(p_field->grid_layer, p_grass);
+
+	mov	rdx, QWORD PTR p_grass$[rbp]
+	mov	rax, QWORD PTR p_field$[rbp]
+	mov	rcx, QWORD PTR [rax+16]
+	call	grass_wither
+
+; 89   :                 p_grass->timer = p_field->grow_timer_reset_value;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rcx, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR [rcx]
+	mov	DWORD PTR [rax+8], ecx
+$LN2@grass_act:
+
+; 90   :                 break;
+; 91   :         }
+; 92   :     }
+
+	jmp	SHORT $LN5@grass_act
+$LN4@grass_act:
+
+; 93   :     else if(p_grass->timer >= 0)
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	cmp	DWORD PTR [rax+8], 0
+	jl	SHORT $LN9@grass_act
+
+; 94   :         p_grass->timer -= FRAME_TIME;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	eax, DWORD PTR [rax+8]
+	sub	eax, 16
+	mov	rcx, QWORD PTR p_grass$[rbp]
+	mov	DWORD PTR [rcx+8], eax
+$LN9@grass_act:
+$LN5@grass_act:
+
+; 95   : 
+; 96   :     p_grass->life_time -= FRAME_TIME;
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	eax, DWORD PTR [rax+12]
+	sub	eax, 16
+	mov	rcx, QWORD PTR p_grass$[rbp]
+	mov	DWORD PTR [rcx+12], eax
+
+; 97   : }
+
+	lea	rsp, QWORD PTR [rbp+216]
+	pop	rdi
+	pop	rbp
+	ret	0
+grass_act ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp /RTCsu /ZI
+; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
+;	COMDAT grass_sense
+_TEXT	SEGMENT
+index$ = 8
+p_grass$ = 256
+p_grid$ = 264
+grass_sense PROC					; COMDAT
+
+; 51   : {
+
+$LN9:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	push	rbp
+	push	rdi
+	sub	rsp, 264				; 00000108H
+	lea	rbp, QWORD PTR [rsp+32]
+	mov	rdi, rsp
+	mov	ecx, 66					; 00000042H
+	mov	eax, -858993460				; ccccccccH
+	rep stosd
+	mov	rcx, QWORD PTR [rsp+296]
+	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
+	call	__CheckForDebuggerJustMyCode
+
+; 52   :     vector2 index = grid_world_to_grid(p_grid, *(vector2*)&p_grass->destination);
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	mov	rdx, QWORD PTR [rax+56]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_world_to_grid
+	mov	QWORD PTR index$[rbp], rax
+
+; 53   :     if(grid_check_node_data(p_grid, index, HAS_WOLF) ||
+
+	mov	r8d, 32					; 00000020H
+	mov	rdx, QWORD PTR index$[rbp]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_check_node_data
+	test	eax, eax
+	jne	SHORT $LN4@grass_sens
+	mov	r8d, 16
+	mov	rdx, QWORD PTR index$[rbp]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_check_node_data
+	test	eax, eax
+	je	SHORT $LN2@grass_sens
+$LN4@grass_sens:
+
+; 54   :        grid_check_node_data(p_grid, index, HAS_SHEEP))
+; 55   :         return GRASS_TRAMPLE;
+
+	mov	eax, 3
+	jmp	SHORT $LN1@grass_sens
+	jmp	SHORT $LN3@grass_sens
+$LN2@grass_sens:
+
+; 56   :     else if(p_grass->life_time <= 0)
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	cmp	DWORD PTR [rax+12], 0
+	jg	SHORT $LN5@grass_sens
+
+; 57   :         return GRASS_AGE_DONE;
+
+	mov	eax, 2
+	jmp	SHORT $LN1@grass_sens
+	jmp	SHORT $LN6@grass_sens
+$LN5@grass_sens:
+
+; 58   :     else if(p_grass->grow_level >= 5)
+
+	mov	rax, QWORD PTR p_grass$[rbp]
+	cmp	DWORD PTR [rax+4], 5
+	jl	SHORT $LN7@grass_sens
+
+; 59   :         return GRASS_FULL_GROWN;
+
+	mov	eax, 1
+	jmp	SHORT $LN1@grass_sens
+$LN7@grass_sens:
+$LN6@grass_sens:
+$LN3@grass_sens:
+
+; 60   :     return GRASS_NO_INPUT;
+
+	xor	eax, eax
+$LN1@grass_sens:
+
+; 61   : }
+
+	mov	rdi, rax
+	lea	rcx, QWORD PTR [rbp-32]
+	lea	rdx, OFFSET FLAT:grass_sense$rtcFrameData
+	call	_RTC_CheckStackVars
+	mov	rax, rdi
+	lea	rsp, QWORD PTR [rbp+232]
+	pop	rdi
+	pop	rbp
+	ret	0
+grass_sense ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\grass.c
@@ -884,14 +1406,14 @@ x$2 = 68
 p_field$ = 320
 p_grid$ = 328
 p_dimension$ = 336
-p_source_rect$ = 344
+p_anim$ = 344
 p_grow_timer_reset_value$ = 352
 p_spread_timer_reset_value$ = 360
-p_animation_step$ = 368
+p_max_life_time$ = 368
 p_size$ = 376
 grass_field_init PROC					; COMDAT
 
-; 17   : {
+; 18   : {
 
 $LN9:
 	mov	QWORD PTR [rsp+32], r9
@@ -911,28 +1433,22 @@ $LN9:
 	lea	rcx, OFFSET FLAT:__9F64F477_grass@c
 	call	__CheckForDebuggerJustMyCode
 
-; 18   :     grass* temp = NULL;
+; 19   :     grass* temp = NULL;
 
 	mov	QWORD PTR temp$[rbp], 0
 
-; 19   : 
-; 20   :     p_field->dimensions                 = p_dimension;
+; 20   : 
+; 21   :     p_field->dimensions                 = p_dimension;
 
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	rcx, QWORD PTR p_dimension$[rbp]
 	mov	QWORD PTR [rax+32], rcx
 
-; 21   :     p_field->grow_timer_reset_value     = p_grow_timer_reset_value;
+; 22   :     p_field->grow_timer_reset_value     = p_grow_timer_reset_value;
 
 	mov	rax, QWORD PTR p_field$[rbp]
 	mov	ecx, DWORD PTR p_grow_timer_reset_value$[rbp]
 	mov	DWORD PTR [rax], ecx
-
-; 22   :     p_field->source_index_step          = p_animation_step;
-
-	mov	rax, QWORD PTR p_field$[rbp]
-	mov	ecx, DWORD PTR p_animation_step$[rbp]
-	mov	DWORD PTR [rax+8], ecx
 
 ; 23   :     p_field->spread_timer_reset_value   = p_spread_timer_reset_value;
 
@@ -946,22 +1462,29 @@ $LN9:
 	mov	rcx, QWORD PTR p_grid$[rbp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 25   :     p_field->pool                       = (grass*)calloc(p_dimension.x * p_dimension.y, 
+; 25   :     p_field->max_life_time              = p_max_life_time;
+
+	mov	rax, QWORD PTR p_field$[rbp]
+	mov	ecx, DWORD PTR p_max_life_time$[rbp]
+	mov	DWORD PTR [rax+8], ecx
+
+; 26   :     p_field->pool                       = (grass*)calloc(p_dimension.x * p_dimension.y, 
 
 	mov	eax, DWORD PTR p_dimension$[rbp+4]
 	mul	DWORD PTR p_dimension$[rbp]
 	mov	eax, eax
 	mov	rcx, -1
 	cmovo	rax, rcx
-	mov	edx, 40					; 00000028H
+	mov	edx, 80					; 00000050H
 	mov	rcx, rax
 	call	QWORD PTR __imp_calloc
 	mov	rcx, QWORD PTR p_field$[rbp]
 	mov	QWORD PTR [rcx+24], rax
 
-; 26   :                                                          sizeof(grass));
-; 27   : 
-; 28   :     for(int y = 0; y < p_dimension.y; y++)
+; 27   :                                                          sizeof(grass));
+; 28   :     
+; 29   :     
+; 30   :     for(int y = 0; y < p_dimension.y; y++)
 
 	mov	DWORD PTR y$1[rbp], 0
 	jmp	SHORT $LN4@grass_fiel
@@ -974,8 +1497,8 @@ $LN4@grass_fiel:
 	cmp	DWORD PTR y$1[rbp], eax
 	jge	$LN3@grass_fiel
 
-; 29   :     {
-; 30   :         for(int x = 0; x < p_dimension.x; x++)
+; 31   :     {
+; 32   :         for(int x = 0; x < p_dimension.x; x++)
 
 	mov	DWORD PTR x$2[rbp], 0
 	jmp	SHORT $LN7@grass_fiel
@@ -988,76 +1511,89 @@ $LN7@grass_fiel:
 	cmp	DWORD PTR x$2[rbp], eax
 	jge	$LN6@grass_fiel
 
-; 31   :         {
-; 32   :             temp = &p_field->pool[y * p_dimension.y + x];
+; 33   :         {
+; 34   :             temp = &p_field->pool[y * p_dimension.y + x];
 
 	mov	eax, DWORD PTR y$1[rbp]
 	imul	eax, DWORD PTR p_dimension$[rbp+4]
 	add	eax, DWORD PTR x$2[rbp]
 	cdqe
-	imul	rax, rax, 40				; 00000028H
+	imul	rax, rax, 80				; 00000050H
 	mov	rcx, QWORD PTR p_field$[rbp]
 	add	rax, QWORD PTR [rcx+24]
 	mov	QWORD PTR temp$[rbp], rax
 
-; 33   : 
-; 34   :             temp->source = p_source_rect;
+; 35   : 
+; 36   :             temp->anim          = p_anim;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	lea	rdi, QWORD PTR [rax+8]
-	mov	rsi, QWORD PTR p_source_rect$[rbp]
-	mov	ecx, 16
+	lea	rdi, QWORD PTR [rax+16]
+	mov	rsi, QWORD PTR p_anim$[rbp]
+	mov	ecx, 40					; 00000028H
 	rep movsb
 
-; 35   : 
-; 36   :             temp->destination.x = x * p_size;
+; 37   :             temp->destination.x = x * p_size;
 
 	mov	eax, DWORD PTR x$2[rbp]
 	imul	eax, DWORD PTR p_size$[rbp]
 	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+24], eax
+	mov	DWORD PTR [rcx+56], eax
 
-; 37   :             temp->destination.y = y * p_size;
+; 38   :             temp->destination.y = y * p_size;
 
 	mov	eax, DWORD PTR y$1[rbp]
 	imul	eax, DWORD PTR p_size$[rbp]
 	mov	rcx, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rcx+28], eax
+	mov	DWORD PTR [rcx+60], eax
 
-; 38   :             temp->destination.w = p_size;
-
-	mov	rax, QWORD PTR temp$[rbp]
-	mov	ecx, DWORD PTR p_size$[rbp]
-	mov	DWORD PTR [rax+32], ecx
-
-; 39   :             temp->destination.h = p_size;
+; 39   :             temp->destination.w = p_size;
 
 	mov	rax, QWORD PTR temp$[rbp]
 	mov	ecx, DWORD PTR p_size$[rbp]
-	mov	DWORD PTR [rax+36], ecx
+	mov	DWORD PTR [rax+64], ecx
 
-; 40   : 
-; 41   :             temp->timer = 0;
+; 40   :             temp->destination.h = p_size;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	ecx, DWORD PTR p_size$[rbp]
+	mov	DWORD PTR [rax+68], ecx
+
+; 41   :             temp->alive         = false;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	BYTE PTR [rax], 0
+
+; 42   :             temp->timer         = 0;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	DWORD PTR [rax+8], 0
+
+; 43   :             temp->grow_level    = 0;
 
 	mov	rax, QWORD PTR temp$[rbp]
 	mov	DWORD PTR [rax+4], 0
 
-; 42   :             temp->grow_level = 0;
+; 44   :             temp->life_time     = 0;
 
 	mov	rax, QWORD PTR temp$[rbp]
-	mov	DWORD PTR [rax], 0
+	mov	DWORD PTR [rax+12], 0
 
-; 43   :         }
+; 45   :             temp->state = 0;
+
+	mov	rax, QWORD PTR temp$[rbp]
+	mov	DWORD PTR [rax+76], 0
+
+; 46   :         }
 
 	jmp	$LN5@grass_fiel
 $LN6@grass_fiel:
 
-; 44   :     }
+; 47   :     }
 
 	jmp	$LN2@grass_fiel
 $LN3@grass_fiel:
 
-; 45   : }
+; 48   : }
 
 	lea	rsp, QWORD PTR [rbp+288]
 	pop	rdi

@@ -86,14 +86,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="animation.c" />
     <ClCompile Include="grass.c" />
     <ClCompile Include="grid.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="sheep.c" />
+    <ClCompile Include="vector2.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="animation.h" />
     <ClInclude Include="grass.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="sheep.h" />
     <ClInclude Include="system_info.h" />
     <ClInclude Include="vector2.h" />
   </ItemGroup>

@@ -22,6 +22,8 @@ msvcjmc	ENDS
 PUBLIC	grid_init
 PUBLIC	grid_valid_index
 PUBLIC	grid_set_data_at
+PUBLIC	grid_world_to_grid
+PUBLIC	grid_grid_to_world
 PUBLIC	grid_open_neighbours_at
 PUBLIC	grid_check_node_data
 PUBLIC	grid_draw
@@ -29,6 +31,7 @@ PUBLIC	grid_free_nodes
 PUBLIC	__JustMyCode_Default
 PUBLIC	__real@3e4ccccd
 PUBLIC	__real@3e800000
+PUBLIC	__real@3f000000
 EXTRN	__imp_calloc:PROC
 EXTRN	__imp_free:PROC
 EXTRN	SDL_SetRenderDrawColor:PROC
@@ -63,6 +66,18 @@ $pdata$grid_set_data_at DD imagerel $LN6
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
+$pdata$grid_world_to_grid DD imagerel $LN3
+	DD	imagerel $LN3+133
+	DD	imagerel $unwind$grid_world_to_grid
+pdata	ENDS
+;	COMDAT pdata
+pdata	SEGMENT
+$pdata$grid_grid_to_world DD imagerel $LN3
+	DD	imagerel $LN3+368
+	DD	imagerel $unwind$grid_grid_to_world
+pdata	ENDS
+;	COMDAT pdata
+pdata	SEGMENT
 $pdata$grid_open_neighbours_at DD imagerel $LN31
 	DD	imagerel $LN31+930
 	DD	imagerel $unwind$grid_open_neighbours_at
@@ -75,8 +90,8 @@ $pdata$grid_check_node_data DD imagerel $LN3
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
-$pdata$grid_draw DD imagerel $LN11
-	DD	imagerel $LN11+840
+$pdata$grid_draw DD imagerel $LN12
+	DD	imagerel $LN12+1005
 	DD	imagerel $unwind$grid_draw
 pdata	ENDS
 ;	COMDAT pdata
@@ -85,6 +100,10 @@ $pdata$grid_free_nodes DD imagerel $LN3
 	DD	imagerel $LN3+96
 	DD	imagerel $unwind$grid_free_nodes
 pdata	ENDS
+;	COMDAT __real@3f000000
+CONST	SEGMENT
+__real@3f000000 DD 03f000000r			; 0.5
+CONST	ENDS
 ;	COMDAT __real@3e800000
 CONST	SEGMENT
 __real@3e800000 DD 03e800000r			; 0.25
@@ -112,10 +131,10 @@ xdata	ENDS
 xdata	SEGMENT
 $unwind$grid_draw DD 035064119H
 	DD	01143319H
-	DD	0700d0044H
+	DD	0700d004aH
 	DD	0500b600cH
 	DD	imagerel __GSHandlerCheck
-	DD	0218H
+	DD	0248H
 xdata	ENDS
 ;	COMDAT CONST
 CONST	SEGMENT
@@ -143,10 +162,24 @@ grid_draw$rtcName$3 DB 072H
 	DB	065H
 	DB	063H
 	DB	074H
+	DB	032H
+	DB	00H
+	ORG $+2
+grid_draw$rtcName$4 DB 072H
+	DB	065H
+	DB	063H
+	DB	074H
 	DB	033H
 	DB	00H
 	ORG $+2
-grid_draw$rtcVarDesc DD 0118H
+grid_draw$rtcFrameData DD 05H
+	DD	00H
+	DQ	FLAT:grid_draw$rtcVarDesc
+	ORG $+8
+grid_draw$rtcVarDesc DD 0148H
+	DD	010H
+	DQ	FLAT:grid_draw$rtcName$4
+	DD	0118H
 	DD	010H
 	DQ	FLAT:grid_draw$rtcName$3
 	DD	0e8H
@@ -158,10 +191,6 @@ grid_draw$rtcVarDesc DD 0118H
 	DD	038H
 	DD	08H
 	DQ	FLAT:grid_draw$rtcName$0
-	ORG $+192
-grid_draw$rtcFrameData DD 04H
-	DD	00H
-	DQ	FLAT:grid_draw$rtcVarDesc
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
@@ -218,6 +247,73 @@ grid_open_neighbours_at$rtcVarDesc DD 068H
 grid_open_neighbours_at$rtcFrameData DD 02H
 	DD	00H
 	DQ	FLAT:grid_open_neighbours_at$rtcVarDesc
+CONST	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grid_grid_to_world DD 025053401H
+	DD	0118231dH
+	DD	070110025H
+	DD	05010H
+xdata	ENDS
+;	COMDAT CONST
+CONST	SEGMENT
+grid_grid_to_world$rtcName$0 DB 074H
+	DB	06fH
+	DB	05fH
+	DB	072H
+	DB	065H
+	DB	074H
+	DB	075H
+	DB	072H
+	DB	06eH
+	DB	00H
+	ORG $+2
+grid_grid_to_world$rtcName$1 DB 06fH
+	DB	066H
+	DB	066H
+	DB	073H
+	DB	065H
+	DB	074H
+	DB	00H
+	ORG $+13
+grid_grid_to_world$rtcVarDesc DD 048H
+	DD	08H
+	DQ	FLAT:grid_grid_to_world$rtcName$1
+	DD	028H
+	DD	08H
+	DQ	FLAT:grid_grid_to_world$rtcName$0
+	ORG $+96
+grid_grid_to_world$rtcFrameData DD 02H
+	DD	00H
+	DQ	FLAT:grid_grid_to_world$rtcVarDesc
+CONST	ENDS
+;	COMDAT xdata
+xdata	SEGMENT
+$unwind$grid_world_to_grid DD 025052f01H
+	DD	01132318H
+	DD	0700c0021H
+	DD	0500bH
+xdata	ENDS
+;	COMDAT CONST
+CONST	SEGMENT
+grid_world_to_grid$rtcName$0 DB 074H
+	DB	06fH
+	DB	05fH
+	DB	072H
+	DB	065H
+	DB	074H
+	DB	075H
+	DB	072H
+	DB	06eH
+	DB	00H
+	ORG $+6
+grid_world_to_grid$rtcVarDesc DD 028H
+	DD	08H
+	DQ	FLAT:grid_world_to_grid$rtcName$0
+	ORG $+48
+grid_world_to_grid$rtcFrameData DD 01H
+	DD	00H
+	DQ	FLAT:grid_world_to_grid$rtcVarDesc
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
@@ -296,81 +392,82 @@ _TEXT	SEGMENT
 index$ = 8
 rect$ = 40
 temp$ = 88
-y$7 = 116
-x$8 = 148
-rect2$9 = 184
-rect3$10 = 232
-rest$11 = 276
-__$ArrayPad$ = 488
-p_renderer$ = 528
-p_grid$ = 536
+y$8 = 116
+x$9 = 148
+rect2$10 = 184
+rect2$11 = 232
+rect3$12 = 280
+rest$13 = 324
+__$ArrayPad$ = 536
+p_renderer$ = 576
+p_grid$ = 584
 grid_draw PROC						; COMDAT
 
-; 105  : {
+; 129  : {
 
-$LN11:
+$LN12:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	push	rbp
 	push	rsi
 	push	rdi
-	sub	rsp, 544				; 00000220H
+	sub	rsp, 592				; 00000250H
 	lea	rbp, QWORD PTR [rsp+48]
 	mov	rdi, rsp
-	mov	ecx, 136				; 00000088H
+	mov	ecx, 148				; 00000094H
 	mov	eax, -858993460				; ccccccccH
 	rep stosd
-	mov	rcx, QWORD PTR [rsp+584]
+	mov	rcx, QWORD PTR [rsp+632]
 	mov	rax, QWORD PTR __security_cookie
 	xor	rax, rbp
 	mov	QWORD PTR __$ArrayPad$[rbp], rax
 	lea	rcx, OFFSET FLAT:__00B5510B_grid@c
 	call	__CheckForDebuggerJustMyCode
 
-; 106  :     vector2     index;
-; 107  :     SDL_Rect    rect;
-; 108  :     node*       temp    = NULL;
+; 130  :     vector2     index;
+; 131  :     SDL_Rect    rect;
+; 132  :     node*       temp    = NULL;
 
 	mov	QWORD PTR temp$[rbp], 0
 
-; 109  : 
-; 110  :     for(int y = 0; y < p_grid->dimensions.y; y++)
+; 133  : 
+; 134  :     for(int y = 0; y < p_grid->dimensions.y; y++)
 
-	mov	DWORD PTR y$7[rbp], 0
+	mov	DWORD PTR y$8[rbp], 0
 	jmp	SHORT $LN4@grid_draw
 $LN2@grid_draw:
-	mov	eax, DWORD PTR y$7[rbp]
+	mov	eax, DWORD PTR y$8[rbp]
 	inc	eax
-	mov	DWORD PTR y$7[rbp], eax
+	mov	DWORD PTR y$8[rbp], eax
 $LN4@grid_draw:
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	eax, DWORD PTR [rax+8]
-	cmp	DWORD PTR y$7[rbp], eax
+	cmp	DWORD PTR y$8[rbp], eax
 	jge	$LN3@grid_draw
 
-; 111  :     {
-; 112  :         for(int x = 0; x < p_grid->dimensions.x; x++)
+; 135  :     {
+; 136  :         for(int x = 0; x < p_grid->dimensions.x; x++)
 
-	mov	DWORD PTR x$8[rbp], 0
+	mov	DWORD PTR x$9[rbp], 0
 	jmp	SHORT $LN7@grid_draw
 $LN5@grid_draw:
-	mov	eax, DWORD PTR x$8[rbp]
+	mov	eax, DWORD PTR x$9[rbp]
 	inc	eax
-	mov	DWORD PTR x$8[rbp], eax
+	mov	DWORD PTR x$9[rbp], eax
 $LN7@grid_draw:
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	eax, DWORD PTR [rax+4]
-	cmp	DWORD PTR x$8[rbp], eax
+	cmp	DWORD PTR x$9[rbp], eax
 	jge	$LN6@grid_draw
 
-; 113  :         {
-; 114  :             temp = &p_grid->nodes[y * p_grid->dimensions.x + x];
+; 137  :         {
+; 138  :             temp = &p_grid->nodes[y * p_grid->dimensions.x + x];
 
 	mov	rax, QWORD PTR p_grid$[rbp]
-	mov	ecx, DWORD PTR y$7[rbp]
+	mov	ecx, DWORD PTR y$8[rbp]
 	imul	ecx, DWORD PTR [rax+4]
 	mov	eax, ecx
-	add	eax, DWORD PTR x$8[rbp]
+	add	eax, DWORD PTR x$9[rbp]
 	cdqe
 	mov	rcx, QWORD PTR p_grid$[rbp]
 	mov	rcx, QWORD PTR [rcx+16]
@@ -378,46 +475,46 @@ $LN7@grid_draw:
 	mov	rax, rcx
 	mov	QWORD PTR temp$[rbp], rax
 
-; 115  :             rect.x =  x * p_grid->cell_size;
+; 139  :             rect.x =  x * p_grid->cell_size;
 
 	mov	rax, QWORD PTR p_grid$[rbp]
-	mov	ecx, DWORD PTR x$8[rbp]
+	mov	ecx, DWORD PTR x$9[rbp]
 	imul	ecx, DWORD PTR [rax]
 	mov	eax, ecx
 	mov	DWORD PTR rect$[rbp], eax
 
-; 116  :             rect.y = y * p_grid->cell_size;
+; 140  :             rect.y = y * p_grid->cell_size;
 
 	mov	rax, QWORD PTR p_grid$[rbp]
-	mov	ecx, DWORD PTR y$7[rbp]
+	mov	ecx, DWORD PTR y$8[rbp]
 	imul	ecx, DWORD PTR [rax]
 	mov	eax, ecx
 	mov	DWORD PTR rect$[rbp+4], eax
 
-; 117  :             rect.w = p_grid->cell_size;
+; 141  :             rect.w = p_grid->cell_size;
 
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR rect$[rbp+8], eax
 
-; 118  :             rect.h = p_grid->cell_size;
+; 142  :             rect.h = p_grid->cell_size;
 
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR rect$[rbp+12], eax
 
-; 119  : 
-; 120  :             index.x = x;
+; 143  : 
+; 144  :             index.x = x;
 
-	mov	eax, DWORD PTR x$8[rbp]
+	mov	eax, DWORD PTR x$9[rbp]
 	mov	DWORD PTR index$[rbp], eax
 
-; 121  :             index.y = y;
+; 145  :             index.y = y;
 
-	mov	eax, DWORD PTR y$7[rbp]
+	mov	eax, DWORD PTR y$8[rbp]
 	mov	DWORD PTR index$[rbp+4], eax
 
-; 122  :             if(grid_check_node_data(p_grid, index, HAS_GRASS))
+; 146  :             if(grid_check_node_data(p_grid, index, HAS_GRASS))
 
 	mov	r8d, 8
 	mov	rdx, QWORD PTR index$[rbp]
@@ -426,33 +523,33 @@ $LN7@grid_draw:
 	test	eax, eax
 	je	SHORT $LN8@grid_draw
 
-; 123  :             {
-; 124  :                 // To show data and sprites of objects at the same time
-; 125  :                 SDL_Rect rect2 = rect;
+; 147  :             {
+; 148  :                 // To show data and sprites of objects at the same time
+; 149  :                 SDL_Rect rect2 = rect;
 
-	lea	rax, QWORD PTR rect2$9[rbp]
+	lea	rax, QWORD PTR rect2$10[rbp]
 	lea	rcx, QWORD PTR rect$[rbp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 16
 	rep movsb
 
-; 126  :                 rect2.w *= 0.25f;
+; 150  :                 rect2.w *= 0.25f;
 
-	cvtsi2ss xmm0, DWORD PTR rect2$9[rbp+8]
+	cvtsi2ss xmm0, DWORD PTR rect2$10[rbp+8]
 	mulss	xmm0, DWORD PTR __real@3e800000
 	cvttss2si eax, xmm0
-	mov	DWORD PTR rect2$9[rbp+8], eax
+	mov	DWORD PTR rect2$10[rbp+8], eax
 
-; 127  :                 rect2.h *= 0.25f;
+; 151  :                 rect2.h *= 0.25f;
 
-	cvtsi2ss xmm0, DWORD PTR rect2$9[rbp+12]
+	cvtsi2ss xmm0, DWORD PTR rect2$10[rbp+12]
 	mulss	xmm0, DWORD PTR __real@3e800000
 	cvttss2si eax, xmm0
-	mov	DWORD PTR rect2$9[rbp+12], eax
+	mov	DWORD PTR rect2$10[rbp+12], eax
 
-; 128  : 
-; 129  :                 SDL_SetRenderDrawColor(p_renderer,
+; 152  : 
+; 153  :                 SDL_SetRenderDrawColor(p_renderer,
 
 	mov	BYTE PTR [rsp+32], 255			; 000000ffH
 	xor	r9d, r9d
@@ -461,82 +558,144 @@ $LN7@grid_draw:
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_SetRenderDrawColor
 
-; 130  :                                        0,
-; 131  :                                        125,
-; 132  :                                        0,
-; 133  :                                        255);
-; 134  :                 SDL_RenderFillRect(p_renderer, &rect2);
+; 154  :                                        0,
+; 155  :                                        125,
+; 156  :                                        0,
+; 157  :                                        255);
+; 158  :                 SDL_RenderFillRect(p_renderer, &rect2);
 
-	lea	rdx, QWORD PTR rect2$9[rbp]
+	lea	rdx, QWORD PTR rect2$10[rbp]
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_RenderFillRect
 $LN8@grid_draw:
 
-; 135  :             }
-; 136  :             if(grid_check_node_data(p_grid, index, GRASS_LEVEL))
+; 159  :             }
+; 160  :             if(grid_check_node_data(p_grid, index, HAS_SHEEP))
 
-	mov	r8d, 7
+	mov	r8d, 16
 	mov	rdx, QWORD PTR index$[rbp]
 	mov	rcx, QWORD PTR p_grid$[rbp]
 	call	grid_check_node_data
 	test	eax, eax
 	je	$LN9@grid_draw
 
-; 137  :             {
-; 138  :                 // To show data and sprites of objects at the same time
-; 139  :                 SDL_Rect rect3 = rect;
+; 161  :             {
+; 162  :                 // To show data and sprites of objects at the same time
+; 163  :                 SDL_Rect rect2 = rect;
 
-	lea	rax, QWORD PTR rect3$10[rbp]
+	lea	rax, QWORD PTR rect2$11[rbp]
 	lea	rcx, QWORD PTR rect$[rbp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 16
 	rep movsb
 
-; 140  :                 rect3.w *= 0.25f;
+; 164  :                 rect2.x += 32;
 
-	cvtsi2ss xmm0, DWORD PTR rect3$10[rbp+8]
+	mov	eax, DWORD PTR rect2$11[rbp]
+	add	eax, 32					; 00000020H
+	mov	DWORD PTR rect2$11[rbp], eax
+
+; 165  :                 rect2.w *= 0.25f;
+
+	cvtsi2ss xmm0, DWORD PTR rect2$11[rbp+8]
 	mulss	xmm0, DWORD PTR __real@3e800000
 	cvttss2si eax, xmm0
-	mov	DWORD PTR rect3$10[rbp+8], eax
+	mov	DWORD PTR rect2$11[rbp+8], eax
 
-; 141  :                 rect3.x += rect3.w;
+; 166  :                 rect2.h *= 0.25f;
 
-	mov	eax, DWORD PTR rect3$10[rbp+8]
-	mov	ecx, DWORD PTR rect3$10[rbp]
-	add	ecx, eax
-	mov	eax, ecx
-	mov	DWORD PTR rect3$10[rbp], eax
-
-; 142  : 
-; 143  :                 int rest = (int) (rect3.h * (1.0f / 5.0f));
-
-	cvtsi2ss xmm0, DWORD PTR rect3$10[rbp+12]
-	mulss	xmm0, DWORD PTR __real@3e4ccccd
+	cvtsi2ss xmm0, DWORD PTR rect2$11[rbp+12]
+	mulss	xmm0, DWORD PTR __real@3e800000
 	cvttss2si eax, xmm0
-	mov	DWORD PTR rest$11[rbp], eax
+	mov	DWORD PTR rect2$11[rbp+12], eax
 
-; 144  : 
-; 145  :                 rect3.h *= 0;
+; 167  : 
+; 168  :                 SDL_SetRenderDrawColor(p_renderer,
 
-	imul	eax, DWORD PTR rect3$10[rbp+12], 0
-	mov	DWORD PTR rect3$10[rbp+12], eax
+	mov	BYTE PTR [rsp+32], 255			; 000000ffH
+	mov	r9b, 255				; 000000ffH
+	mov	r8b, 125				; 0000007dH
+	xor	edx, edx
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_SetRenderDrawColor
 
-; 146  :                 rect3.h += rest * grid_check_node_data(p_grid, index, GRASS_LEVEL);
+; 169  :                                        0,
+; 170  :                                        125,
+; 171  :                                        255,
+; 172  :                                        255);
+; 173  :                 SDL_RenderFillRect(p_renderer, &rect2);
+
+	lea	rdx, QWORD PTR rect2$11[rbp]
+	mov	rcx, QWORD PTR p_renderer$[rbp]
+	call	SDL_RenderFillRect
+$LN9@grid_draw:
+
+; 174  :             }
+; 175  :             if(grid_check_node_data(p_grid, index, GRASS_LEVEL))
 
 	mov	r8d, 7
 	mov	rdx, QWORD PTR index$[rbp]
 	mov	rcx, QWORD PTR p_grid$[rbp]
 	call	grid_check_node_data
-	mov	ecx, DWORD PTR rest$11[rbp]
-	imul	ecx, eax
-	mov	eax, ecx
-	mov	ecx, DWORD PTR rect3$10[rbp+12]
+	test	eax, eax
+	je	$LN10@grid_draw
+
+; 176  :             {
+; 177  :                 // To show data and sprites of objects at the same time
+; 178  :                 SDL_Rect rect3 = rect;
+
+	lea	rax, QWORD PTR rect3$12[rbp]
+	lea	rcx, QWORD PTR rect$[rbp]
+	mov	rdi, rax
+	mov	rsi, rcx
+	mov	ecx, 16
+	rep movsb
+
+; 179  :                 rect3.w *= 0.25f;
+
+	cvtsi2ss xmm0, DWORD PTR rect3$12[rbp+8]
+	mulss	xmm0, DWORD PTR __real@3e800000
+	cvttss2si eax, xmm0
+	mov	DWORD PTR rect3$12[rbp+8], eax
+
+; 180  :                 rect3.x += rect3.w;
+
+	mov	eax, DWORD PTR rect3$12[rbp+8]
+	mov	ecx, DWORD PTR rect3$12[rbp]
 	add	ecx, eax
 	mov	eax, ecx
-	mov	DWORD PTR rect3$10[rbp+12], eax
+	mov	DWORD PTR rect3$12[rbp], eax
 
-; 147  :                 SDL_SetRenderDrawColor(p_renderer,
+; 181  : 
+; 182  :                 int rest = (int) (rect3.h * (1.0f / 5.0f));
+
+	cvtsi2ss xmm0, DWORD PTR rect3$12[rbp+12]
+	mulss	xmm0, DWORD PTR __real@3e4ccccd
+	cvttss2si eax, xmm0
+	mov	DWORD PTR rest$13[rbp], eax
+
+; 183  : 
+; 184  :                 rect3.h *= 0;
+
+	imul	eax, DWORD PTR rect3$12[rbp+12], 0
+	mov	DWORD PTR rect3$12[rbp+12], eax
+
+; 185  :                 rect3.h += rest * grid_check_node_data(p_grid, index, GRASS_LEVEL);
+
+	mov	r8d, 7
+	mov	rdx, QWORD PTR index$[rbp]
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	call	grid_check_node_data
+	mov	ecx, DWORD PTR rest$13[rbp]
+	imul	ecx, eax
+	mov	eax, ecx
+	mov	ecx, DWORD PTR rect3$12[rbp+12]
+	add	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR rect3$12[rbp+12], eax
+
+; 186  :                 SDL_SetRenderDrawColor(p_renderer,
 
 	mov	BYTE PTR [rsp+32], 255			; 000000ffH
 	xor	r9d, r9d
@@ -545,20 +704,20 @@ $LN8@grid_draw:
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_SetRenderDrawColor
 
-; 148  :                                        0,
-; 149  :                                        255,
-; 150  :                                        0,
-; 151  :                                        255);
-; 152  :                 SDL_RenderFillRect(p_renderer, &rect3);
+; 187  :                                        0,
+; 188  :                                        255,
+; 189  :                                        0,
+; 190  :                                        255);
+; 191  :                 SDL_RenderFillRect(p_renderer, &rect3);
 
-	lea	rdx, QWORD PTR rect3$10[rbp]
+	lea	rdx, QWORD PTR rect3$12[rbp]
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_RenderFillRect
-$LN9@grid_draw:
+$LN10@grid_draw:
 
-; 153  :             }
-; 154  : 
-; 155  :             SDL_SetRenderDrawColor(p_renderer,
+; 192  :             }
+; 193  : 
+; 194  :             SDL_SetRenderDrawColor(p_renderer,
 
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	eax, DWORD PTR [rax+24]
@@ -582,28 +741,28 @@ $LN9@grid_draw:
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_SetRenderDrawColor
 
-; 156  :                                    (p_grid->color & 0xFF000000) >> 24,
-; 157  :                                    (p_grid->color & 0x00FF0000) >> 16,
-; 158  :                                    (p_grid->color & 0x0000FF00) >> 8,
-; 159  :                                    p_grid->color & 0x000000FF);
-; 160  : 
-; 161  :             SDL_RenderDrawRect(p_renderer, &rect);
+; 195  :                                    (p_grid->color & 0xFF000000) >> 24,
+; 196  :                                    (p_grid->color & 0x00FF0000) >> 16,
+; 197  :                                    (p_grid->color & 0x0000FF00) >> 8,
+; 198  :                                    p_grid->color & 0x000000FF);
+; 199  : 
+; 200  :             SDL_RenderDrawRect(p_renderer, &rect);
 
 	lea	rdx, QWORD PTR rect$[rbp]
 	mov	rcx, QWORD PTR p_renderer$[rbp]
 	call	SDL_RenderDrawRect
 
-; 162  :         }
+; 201  :         }
 
 	jmp	$LN5@grid_draw
 $LN6@grid_draw:
 
-; 163  :     }
+; 202  :     }
 
 	jmp	$LN2@grid_draw
 $LN3@grid_draw:
 
-; 164  : }
+; 203  : }
 
 	lea	rcx, QWORD PTR [rbp-48]
 	lea	rdx, OFFSET FLAT:grid_draw$rtcFrameData
@@ -611,7 +770,7 @@ $LN3@grid_draw:
 	mov	rcx, QWORD PTR __$ArrayPad$[rbp]
 	xor	rcx, rbp
 	call	__security_check_cookie
-	lea	rsp, QWORD PTR [rbp+496]
+	lea	rsp, QWORD PTR [rbp+544]
 	pop	rdi
 	pop	rsi
 	pop	rbp
@@ -627,7 +786,7 @@ p_index$ = 232
 bitmask_index$ = 240
 grid_check_node_data PROC				; COMDAT
 
-; 64   : {
+; 88   : {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -645,7 +804,7 @@ $LN3:
 	lea	rcx, OFFSET FLAT:__00B5510B_grid@c
 	call	__CheckForDebuggerJustMyCode
 
-; 65   :     return (p_grid->nodes[p_index.y * p_grid->dimensions.x + p_index.x].data & bitmask_index);
+; 89   :     return (p_grid->nodes[p_index.y * p_grid->dimensions.x + p_index.x].data & bitmask_index);
 
 	mov	rax, QWORD PTR p_grid$[rbp]
 	mov	ecx, DWORD PTR p_index$[rbp+4]
@@ -658,7 +817,7 @@ $LN3:
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, DWORD PTR bitmask_index$[rbp]
 
-; 66   : }
+; 90   : }
 
 	lea	rsp, QWORD PTR [rbp+200]
 	pop	rdi
@@ -694,7 +853,7 @@ p_index$ = 456
 p_block_value$ = 464
 grid_open_neighbours_at PROC				; COMDAT
 
-; 69   : {
+; 93   : {
 
 $LN31:
 	mov	QWORD PTR [rsp+32], r9
@@ -716,19 +875,19 @@ $LN31:
 	lea	rcx, OFFSET FLAT:__00B5510B_grid@c
 	call	__CheckForDebuggerJustMyCode
 
-; 70   :     bool    is_blocked = false;
+; 94   :     bool    is_blocked = false;
 
 	mov	BYTE PTR is_blocked$[rbp], 0
 
-; 71   : 
-; 72   :     (*out_open_count) = 0;
+; 95   : 
+; 96   :     (*out_open_count) = 0;
 
 	mov	rax, QWORD PTR out_open_count$[rbp]
 	mov	DWORD PTR [rax], 0
 
-; 73   : 
-; 74   :     // Consider edges of grid
-; 75   :     bool    blocked[NUM_DIRS] = { !(p_index.y > 0),
+; 97   : 
+; 98   :     // Consider edges of grid
+; 99   :     bool    blocked[NUM_DIRS] = { !(p_index.y > 0),
 
 	cmp	DWORD PTR p_index$[rbp+4], 0
 	jg	SHORT $LN9@grid_open_
@@ -773,12 +932,12 @@ $LN16@grid_open_:
 	movzx	eax, BYTE PTR tv78[rbp]
 	mov	BYTE PTR blocked$[rbp+3], al
 
-; 76   :                                   !(p_index.x < (p_grid->dimensions.x - 1)),
-; 77   :                                   !(p_index.y < (p_grid->dimensions.y - 1)),
-; 78   :                                   !(p_index.x > 0) };
-; 79   : 
-; 80   :     // Init neighbours of center/origin
-; 81   :     vector2 neighbour_indeces[NUM_DIRS] = { { p_index.x + 0, p_index.y - 1 },
+; 100  :                                   !(p_index.x < (p_grid->dimensions.x - 1)),
+; 101  :                                   !(p_index.y < (p_grid->dimensions.y - 1)),
+; 102  :                                   !(p_index.x > 0) };
+; 103  : 
+; 104  :     // Init neighbours of center/origin
+; 105  :     vector2 neighbour_indeces[NUM_DIRS] = { { p_index.x + 0, p_index.y - 1 },
 
 	mov	eax, DWORD PTR p_index$[rbp]
 	mov	DWORD PTR neighbour_indeces$[rbp], eax
@@ -801,11 +960,11 @@ $LN16@grid_open_:
 	mov	eax, DWORD PTR p_index$[rbp+4]
 	mov	DWORD PTR neighbour_indeces$[rbp+28], eax
 
-; 82   :                                             { p_index.x + 1, p_index.y + 0 },
-; 83   :                                             { p_index.x - 0, p_index.y + 1 },
-; 84   :                                             { p_index.x - 1, p_index.y + 0 } };
-; 85   :     // if open_direction is index equal to center/origin, it counts as invalid
-; 86   :     for(int i = 0; i < NUM_DIRS; i++)
+; 106  :                                             { p_index.x + 1, p_index.y + 0 },
+; 107  :                                             { p_index.x - 0, p_index.y + 1 },
+; 108  :                                             { p_index.x - 1, p_index.y + 0 } };
+; 109  :     // if open_direction is index equal to center/origin, it counts as invalid
+; 110  :     for(int i = 0; i < NUM_DIRS; i++)
 
 	mov	DWORD PTR i$5[rbp], 0
 	jmp	SHORT $LN4@grid_open_
@@ -817,7 +976,7 @@ $LN4@grid_open_:
 	cmp	DWORD PTR i$5[rbp], 4
 	jge	SHORT $LN3@grid_open_
 
-; 87   :         out_open_neighbours[i] = p_index;
+; 111  :         out_open_neighbours[i] = p_index;
 
 	movsxd	rax, DWORD PTR i$5[rbp]
 	mov	rcx, QWORD PTR out_open_neighbours$[rbp]
@@ -826,10 +985,10 @@ $LN4@grid_open_:
 	jmp	SHORT $LN2@grid_open_
 $LN3@grid_open_:
 
-; 88   : 
-; 89   :     // Check whether edge or neighbour blocks center/origin
-; 90   :     // :: Get the open neighbours of certain position
-; 91   :     for(int dir = 0; dir < NUM_DIRS; dir++)
+; 112  : 
+; 113  :     // Check whether edge or neighbour blocks center/origin
+; 114  :     // :: Get the open neighbours of certain position
+; 115  :     for(int dir = 0; dir < NUM_DIRS; dir++)
 
 	mov	DWORD PTR dir$6[rbp], 0
 	jmp	SHORT $LN7@grid_open_
@@ -841,8 +1000,8 @@ $LN7@grid_open_:
 	cmp	DWORD PTR dir$6[rbp], 4
 	jge	$LN6@grid_open_
 
-; 92   :     {
-; 93   :         is_blocked = blocked[dir] ||
+; 116  :     {
+; 117  :         is_blocked = blocked[dir] ||
 
 	movsxd	rax, DWORD PTR dir$6[rbp]
 	movzx	eax, BYTE PTR blocked$[rbp+rax]
@@ -870,10 +1029,10 @@ $LN20@grid_open_:
 	movzx	eax, BYTE PTR tv170[rbp]
 	mov	BYTE PTR is_blocked$[rbp], al
 
-; 94   :             grid_check_node_data(p_grid,
-; 95   :                                neighbour_indeces[dir],
-; 96   :                                p_block_value);
-; 97   :         out_open_neighbours[(*out_open_count)].x = (is_blocked * p_index.x) + ((!is_blocked) * neighbour_indeces[dir].x);
+; 118  :             grid_check_node_data(p_grid,
+; 119  :                                neighbour_indeces[dir],
+; 120  :                                p_block_value);
+; 121  :         out_open_neighbours[(*out_open_count)].x = (is_blocked * p_index.x) + ((!is_blocked) * neighbour_indeces[dir].x);
 
 	movzx	eax, BYTE PTR is_blocked$[rbp]
 	test	eax, eax
@@ -895,7 +1054,7 @@ $LN22@grid_open_:
 	mov	rdx, QWORD PTR out_open_neighbours$[rbp]
 	mov	DWORD PTR [rdx+rcx*8], eax
 
-; 98   :         out_open_neighbours[(*out_open_count)].y = (is_blocked * p_index.y) + ((!is_blocked) * neighbour_indeces[dir].y);
+; 122  :         out_open_neighbours[(*out_open_count)].y = (is_blocked * p_index.y) + ((!is_blocked) * neighbour_indeces[dir].y);
 
 	movzx	eax, BYTE PTR is_blocked$[rbp]
 	test	eax, eax
@@ -917,7 +1076,7 @@ $LN24@grid_open_:
 	mov	rdx, QWORD PTR out_open_neighbours$[rbp]
 	mov	DWORD PTR [rdx+rcx*8+4], eax
 
-; 99   :         (*out_open_count) += !is_blocked;
+; 123  :         (*out_open_count) += !is_blocked;
 
 	movzx	eax, BYTE PTR is_blocked$[rbp]
 	test	eax, eax
@@ -933,12 +1092,12 @@ $LN26@grid_open_:
 	mov	rcx, QWORD PTR out_open_count$[rbp]
 	mov	DWORD PTR [rcx], eax
 
-; 100  :     }
+; 124  :     }
 
 	jmp	$LN5@grid_open_
 $LN6@grid_open_:
 
-; 101  :     return (*out_open_count) > NULL;
+; 125  :     return (*out_open_count) > NULL;
 
 	mov	rax, QWORD PTR out_open_count$[rbp]
 	movsxd	rax, DWORD PTR [rax]
@@ -958,7 +1117,7 @@ $LN29@grid_open_:
 $LN30@grid_open_:
 	movzx	eax, BYTE PTR tv210[rbp]
 
-; 102  : }
+; 126  : }
 
 	mov	edi, eax
 	lea	rcx, QWORD PTR [rbp-32]
@@ -973,6 +1132,199 @@ $LN30@grid_open_:
 	pop	rbp
 	ret	0
 grid_open_neighbours_at ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp /RTCsu /ZI
+; File E:\CPP-Programming\Lama\Lama\Lama\grid.c
+;	COMDAT grid_grid_to_world
+_TEXT	SEGMENT
+to_return$ = 8
+offset$ = 40
+p_grid$ = 288
+p_grid_pos$ = 296
+p_world_origin$ = 304
+grid_grid_to_world PROC					; COMDAT
+
+; 71   : {
+
+$LN3:
+	mov	DWORD PTR [rsp+24], r8d
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	push	rbp
+	push	rdi
+	sub	rsp, 296				; 00000128H
+	lea	rbp, QWORD PTR [rsp+32]
+	mov	rdi, rsp
+	mov	ecx, 74					; 0000004aH
+	mov	eax, -858993460				; ccccccccH
+	rep stosd
+	mov	rcx, QWORD PTR [rsp+328]
+	lea	rcx, OFFSET FLAT:__00B5510B_grid@c
+	call	__CheckForDebuggerJustMyCode
+
+; 72   :     vector2 to_return;
+; 73   :     vector2 offset; 
+; 74   :     offset.x = ((p_world_origin & ORIGIN_LEFT) * (int)(p_grid->cell_size * 0.5f)) -
+
+	mov	eax, DWORD PTR p_world_origin$[rbp]
+	and	eax, 8
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rcx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si ecx, xmm0
+	imul	eax, ecx
+	mov	ecx, DWORD PTR p_world_origin$[rbp]
+	and	ecx, 2
+	mov	rdx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rdx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si edx, xmm0
+	imul	ecx, edx
+	sub	eax, ecx
+	mov	DWORD PTR offset$[rbp], eax
+
+; 75   :                ((p_world_origin & ORIGIN_RIGHT) * (int)(p_grid->cell_size * 0.5f));
+; 76   :     offset.y = ((p_world_origin & ORIGIN_BOTTOM) * (int)(p_grid->cell_size * 0.5f)) -
+
+	mov	eax, DWORD PTR p_world_origin$[rbp]
+	and	eax, 4
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rcx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si ecx, xmm0
+	imul	eax, ecx
+	mov	ecx, DWORD PTR p_world_origin$[rbp]
+	and	ecx, 1
+	mov	rdx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rdx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si edx, xmm0
+	imul	ecx, edx
+	sub	eax, ecx
+	mov	DWORD PTR offset$[rbp+4], eax
+
+; 77   :                ((p_world_origin & ORIGIN_TOP) * (int)(p_grid->cell_size * 0.5f));
+; 78   : 
+; 79   :     to_return.x = (int)(p_grid_pos.x * p_grid->cell_size) + (int)(p_grid->cell_size * 0.5f);
+
+	mov	rax, QWORD PTR p_grid$[rbp]
+	mov	ecx, DWORD PTR p_grid_pos$[rbp]
+	imul	ecx, DWORD PTR [rax]
+	mov	eax, ecx
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rcx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si ecx, xmm0
+	add	eax, ecx
+	mov	DWORD PTR to_return$[rbp], eax
+
+; 80   :     to_return.y = (int)(p_grid_pos.y * p_grid->cell_size) + (int)(p_grid->cell_size * 0.5f);
+
+	mov	rax, QWORD PTR p_grid$[rbp]
+	mov	ecx, DWORD PTR p_grid_pos$[rbp+4]
+	imul	ecx, DWORD PTR [rax]
+	mov	eax, ecx
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	cvtsi2ss xmm0, DWORD PTR [rcx]
+	mulss	xmm0, DWORD PTR __real@3f000000
+	cvttss2si ecx, xmm0
+	add	eax, ecx
+	mov	DWORD PTR to_return$[rbp+4], eax
+
+; 81   : 
+; 82   :     to_return.x += offset.x;
+
+	mov	eax, DWORD PTR offset$[rbp]
+	mov	ecx, DWORD PTR to_return$[rbp]
+	add	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR to_return$[rbp], eax
+
+; 83   :     to_return.y += offset.y;
+
+	mov	eax, DWORD PTR offset$[rbp+4]
+	mov	ecx, DWORD PTR to_return$[rbp+4]
+	add	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR to_return$[rbp+4], eax
+
+; 84   : 
+; 85   :     return to_return;
+
+	mov	rax, QWORD PTR to_return$[rbp]
+
+; 86   : }
+
+	mov	rdi, rax
+	lea	rcx, QWORD PTR [rbp-32]
+	lea	rdx, OFFSET FLAT:grid_grid_to_world$rtcFrameData
+	call	_RTC_CheckStackVars
+	mov	rax, rdi
+	lea	rsp, QWORD PTR [rbp+264]
+	pop	rdi
+	pop	rbp
+	ret	0
+grid_grid_to_world ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtp /RTCsu /ZI
+; File E:\CPP-Programming\Lama\Lama\Lama\grid.c
+;	COMDAT grid_world_to_grid
+_TEXT	SEGMENT
+to_return$ = 8
+p_grid$ = 256
+p_world_pos$ = 264
+grid_world_to_grid PROC					; COMDAT
+
+; 64   : {
+
+$LN3:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	push	rbp
+	push	rdi
+	sub	rsp, 264				; 00000108H
+	lea	rbp, QWORD PTR [rsp+32]
+	mov	rdi, rsp
+	mov	ecx, 66					; 00000042H
+	mov	eax, -858993460				; ccccccccH
+	rep stosd
+	mov	rcx, QWORD PTR [rsp+296]
+	lea	rcx, OFFSET FLAT:__00B5510B_grid@c
+	call	__CheckForDebuggerJustMyCode
+
+; 65   :     vector2 to_return;
+; 66   :     to_return.x = (int)(p_world_pos.x / p_grid->cell_size);
+
+	mov	eax, DWORD PTR p_world_pos$[rbp]
+	cdq
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	idiv	DWORD PTR [rcx]
+	mov	DWORD PTR to_return$[rbp], eax
+
+; 67   :     to_return.y = (int)(p_world_pos.y / p_grid->cell_size);
+
+	mov	eax, DWORD PTR p_world_pos$[rbp+4]
+	cdq
+	mov	rcx, QWORD PTR p_grid$[rbp]
+	idiv	DWORD PTR [rcx]
+	mov	DWORD PTR to_return$[rbp+4], eax
+
+; 68   :     return to_return;
+
+	mov	rax, QWORD PTR to_return$[rbp]
+
+; 69   : }
+
+	mov	rdi, rax
+	lea	rcx, QWORD PTR [rbp-32]
+	lea	rdx, OFFSET FLAT:grid_world_to_grid$rtcFrameData
+	call	_RTC_CheckStackVars
+	mov	rax, rdi
+	lea	rsp, QWORD PTR [rbp+232]
+	pop	rdi
+	pop	rbp
+	ret	0
+grid_world_to_grid ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\grid.c

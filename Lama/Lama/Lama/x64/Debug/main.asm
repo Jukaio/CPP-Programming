@@ -26,11 +26,6 @@ PUBLIC	_vfprintf_l
 PUBLIC	printf
 PUBLIC	SDL_main
 PUBLIC	error_msg
-PUBLIC	animation_create
-PUBLIC	animation_animate
-PUBLIC	animation_step_forward
-PUBLIC	animation_draw
-PUBLIC	animation_free_frames
 PUBLIC	__JustMyCode_Default
 PUBLIC	??_C@_0M@KMABGBDJ@Error?3?5?$CFs?5?6@		; `string'
 PUBLIC	??_C@_0BJ@JPHBGNOG@Could?5not?5Initialise?5SDL@	; `string'
@@ -39,8 +34,6 @@ PUBLIC	??_C@_0BK@OADPNOMO@Could?5not?5initialise?5grid@ ; `string'
 PUBLIC	??_C@_02JDPG@rb@				; `string'
 PUBLIC	??_C@_0M@INKEKBKD@texture?4bmp@			; `string'
 PUBLIC	??_C@_0BC@DPMPNCOK@Surface?5not?5valid@		; `string'
-EXTRN	__imp_calloc:PROC
-EXTRN	__imp_free:PROC
 EXTRN	__imp_malloc:PROC
 EXTRN	__imp_srand:PROC
 EXTRN	__imp___acrt_iob_func:PROC
@@ -56,9 +49,8 @@ EXTRN	SDL_CreateRenderer:PROC
 EXTRN	SDL_CreateTextureFromSurface:PROC
 EXTRN	SDL_SetRenderDrawColor:PROC
 EXTRN	SDL_RenderClear:PROC
-EXTRN	SDL_RenderFillRect:PROC
-EXTRN	SDL_RenderCopy:PROC
 EXTRN	SDL_RenderPresent:PROC
+EXTRN	SDL_Delay:PROC
 EXTRN	SDL_Init:PROC
 EXTRN	SDL_Quit:PROC
 EXTRN	memset:PROC
@@ -67,11 +59,16 @@ EXTRN	__imp__time64:PROC
 EXTRN	grid_init:PROC
 EXTRN	grid_draw:PROC
 EXTRN	grid_free_nodes:PROC
+EXTRN	animation_create:PROC
 EXTRN	grass_field_init:PROC
 EXTRN	grass_field_update:PROC
-EXTRN	grass_field_toggle_active_at:PROC
+EXTRN	grass_field_toggle_alive_at:PROC
 EXTRN	grass_field_draw:PROC
 EXTRN	grass_field_clean:PROC
+EXTRN	sheep_flock_init:PROC
+EXTRN	sheep_flock_spawn_sheep:PROC
+EXTRN	sheep_flock_update:PROC
+EXTRN	sheep_flock_draw:PROC
 EXTRN	_RTC_CheckStackVars:PROC
 EXTRN	_RTC_InitBase:PROC
 EXTRN	_RTC_Shutdown:PROC
@@ -102,8 +99,8 @@ $pdata$printf DD imagerel $LN3
 pdata	ENDS
 ;	COMDAT pdata
 pdata	SEGMENT
-$pdata$SDL_main DD imagerel $LN16
-	DD	imagerel $LN16+1599
+$pdata$SDL_main DD imagerel $LN21
+	DD	imagerel $LN21+2267
 	DD	imagerel $unwind$SDL_main
 pdata	ENDS
 ;	COMDAT pdata
@@ -123,36 +120,6 @@ pdata	SEGMENT
 $pdata$error_msg DD imagerel $LN3
 	DD	imagerel $LN3+88
 	DD	imagerel $unwind$error_msg
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$animation_create DD imagerel $LN9
-	DD	imagerel $LN9+451
-	DD	imagerel $unwind$animation_create
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$animation_animate DD imagerel $LN4
-	DD	imagerel $LN4+149
-	DD	imagerel $unwind$animation_animate
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$animation_step_forward DD imagerel $LN3
-	DD	imagerel $LN3+114
-	DD	imagerel $unwind$animation_step_forward
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$animation_draw DD imagerel $LN3
-	DD	imagerel $LN3+180
-	DD	imagerel $unwind$animation_draw
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$animation_free_frames DD imagerel $LN4
-	DD	imagerel $LN4+95
-	DD	imagerel $unwind$animation_free_frames
 pdata	ENDS
 ;	COMDAT rtc$TMZ
 rtc$TMZ	SEGMENT
@@ -194,57 +161,6 @@ CONST	SEGMENT
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
-$unwind$animation_free_frames DD 025052a01H
-	DD	010e2313H
-	DD	07007001dH
-	DD	05006H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$animation_draw DD 035053401H
-	DD	0118331dH
-	DD	07011001fH
-	DD	05010H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$animation_step_forward DD 025052a01H
-	DD	010e2313H
-	DD	07007001dH
-	DD	05006H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$animation_animate DD 025052a01H
-	DD	010e2313H
-	DD	07007001dH
-	DD	05006H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$animation_create DD 025063a01H
-	DD	011e2323H
-	DD	07017002cH
-	DD	050156016H
-xdata	ENDS
-;	COMDAT CONST
-CONST	SEGMENT
-animation_create$rtcName$0 DB 061H
-	DB	06eH
-	DB	069H
-	DB	06dH
-	DB	00H
-	ORG $+11
-animation_create$rtcVarDesc DD 028H
-	DD	020H
-	DQ	FLAT:animation_create$rtcName$0
-	ORG $+48
-animation_create$rtcFrameData DD 01H
-	DD	00H
-	DQ	FLAT:animation_create$rtcVarDesc
-CONST	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
 $unwind$error_msg DD 025052a01H
 	DD	010e2313H
 	DD	07007001dH
@@ -268,10 +184,10 @@ xdata	ENDS
 xdata	SEGMENT
 $unwind$SDL_main DD 045063f19H
 	DD	01134318H
-	DD	0700c00deH
+	DD	0700c0130H
 	DD	0500a600bH
 	DD	imagerel __GSHandlerCheck
-	DD	06e8H
+	DD	0978H
 xdata	ENDS
 ;	COMDAT CONST
 CONST	SEGMENT
@@ -287,10 +203,7 @@ SDL_main$rtcName$0 DB 06dH
 	DB	075H
 	DB	074H
 	DB	00H
-SDL_main$rtcName$4 DB 061H
-	DB	070H
-	DB	070H
-	DB	00H
+	ORG $+4
 SDL_main$rtcName$1 DB 077H
 	DB	069H
 	DB	06eH
@@ -338,19 +251,15 @@ SDL_main$rtcName$3 DB 06dH
 	DB	064H
 	DB	00H
 	ORG $+1
-SDL_main$rtcName$5 DB 067H
-	DB	072H
-	DB	069H
-	DB	064H
-	DB	05fH
-	DB	06cH
+SDL_main$rtcName$4 DB 072H
 	DB	061H
-	DB	079H
+	DB	077H
+	DB	074H
+	DB	069H
+	DB	06dH
 	DB	065H
-	DB	072H
 	DB	00H
-	ORG $+5
-SDL_main$rtcName$6 DB 062H
+SDL_main$rtcName$5 DB 062H
 	DB	061H
 	DB	063H
 	DB	06bH
@@ -368,26 +277,19 @@ SDL_main$rtcName$6 DB 062H
 	DB	072H
 	DB	00H
 	ORG $+7
-SDL_main$rtcName$7 DB 067H
+SDL_main$rtcName$6 DB 067H
 	DB	072H
+	DB	069H
+	DB	064H
+	DB	05fH
+	DB	06cH
 	DB	061H
-	DB	073H
-	DB	073H
-	DB	05fH
-	DB	073H
-	DB	06fH
-	DB	075H
-	DB	072H
-	DB	063H
+	DB	079H
 	DB	065H
-	DB	05fH
 	DB	072H
-	DB	065H
-	DB	063H
-	DB	074H
 	DB	00H
-	ORG $+6
-SDL_main$rtcName$8 DB 067H
+	ORG $+5
+SDL_main$rtcName$7 DB 067H
 	DB	072H
 	DB	061H
 	DB	073H
@@ -399,97 +301,145 @@ SDL_main$rtcName$8 DB 067H
 	DB	06cH
 	DB	00H
 	ORG $+5
-SDL_main$rtcName$9 DB 072H
-	DB	061H
-	DB	077H
-	DB	074H
-	DB	069H
-	DB	06dH
-	DB	065H
-	DB	00H
-SDL_main$rtcName$10 DB 067H
+SDL_main$rtcName$8 DB 067H
 	DB	072H
 	DB	061H
 	DB	073H
 	DB	073H
 	DB	05fH
-	DB	069H
+	DB	061H
 	DB	06eH
-	DB	064H
-	DB	065H
-	DB	078H
-	DB	00H
-SDL_main$rtcName$11 DB 072H
-	DB	065H
-	DB	063H
-	DB	074H
-	DB	073H
-	DB	00H
-	ORG $+6
-SDL_main$rtcName$12 DB 064H
-	DB	065H
-	DB	073H
-	DB	074H
 	DB	069H
-	DB	06eH
+	DB	06dH
 	DB	061H
 	DB	074H
 	DB	069H
 	DB	06fH
 	DB	06eH
 	DB	00H
-SDL_main$rtcName$13 DB 061H
+SDL_main$rtcName$9 DB 067H
+	DB	072H
+	DB	061H
+	DB	073H
+	DB	073H
+	DB	05fH
+	DB	066H
+	DB	072H
+	DB	061H
+	DB	06dH
+	DB	065H
+	DB	05fH
+	DB	069H
+	DB	06eH
+	DB	066H
+	DB	06fH
+	DB	00H
+	ORG $+7
+SDL_main$rtcName$10 DB 073H
+	DB	068H
+	DB	065H
+	DB	065H
+	DB	070H
+	DB	05fH
+	DB	070H
+	DB	06fH
+	DB	06fH
+	DB	06cH
+	DB	00H
+	ORG $+5
+SDL_main$rtcName$11 DB 073H
+	DB	068H
+	DB	065H
+	DB	065H
+	DB	070H
+	DB	05fH
+	DB	061H
 	DB	06eH
 	DB	069H
 	DB	06dH
+	DB	061H
+	DB	074H
+	DB	069H
+	DB	06fH
+	DB	06eH
+	DB	073H
 	DB	00H
 	ORG $+7
+SDL_main$rtcName$12 DB 073H
+	DB	068H
+	DB	065H
+	DB	065H
+	DB	070H
+	DB	05fH
+	DB	066H
+	DB	072H
+	DB	061H
+	DB	06dH
+	DB	065H
+	DB	05fH
+	DB	069H
+	DB	06eH
+	DB	066H
+	DB	06fH
+	DB	073H
+	DB	00H
+	ORG $+6
+SDL_main$rtcName$13 DB 073H
+	DB	070H
+	DB	061H
+	DB	077H
+	DB	06eH
+	DB	05fH
+	DB	061H
+	DB	074H
+	DB	00H
+	ORG $+15
+SDL_main$rtcVarDesc DD 0598H
+	DD	08H
+	DQ	FLAT:SDL_main$rtcName$13
+	DD	04a0H
+	DD	0b4H
+	DQ	FLAT:SDL_main$rtcName$12
+	DD	0400H
+	DD	078H
+	DQ	FLAT:SDL_main$rtcName$11
+	DD	03b8H
+	DD	028H
+	DQ	FLAT:SDL_main$rtcName$10
+	DD	0320H
+	DD	078H
+	DQ	FLAT:SDL_main$rtcName$9
+	DD	02d8H
+	DD	028H
+	DQ	FLAT:SDL_main$rtcName$8
+	DD	0298H
+	DD	028H
+	DQ	FLAT:SDL_main$rtcName$7
+	DD	0258H
+	DD	020H
+	DQ	FLAT:SDL_main$rtcName$6
+	DD	0174H
+	DD	04H
+	DQ	FLAT:SDL_main$rtcName$5
+	DD	0138H
+	DD	08H
+	DQ	FLAT:SDL_main$rtcName$4
+	DD	0118H
+	DD	08H
+	DQ	FLAT:SDL_main$rtcName$3
+	DD	0c8H
+	DD	038H
+	DQ	FLAT:SDL_main$rtcName$2
+	DD	098H
+	DD	018H
+	DQ	FLAT:SDL_main$rtcName$1
+	DD	068H
+	DD	0cH
+	DQ	FLAT:SDL_main$rtcName$0
+	ORG $+672
 SDL_main$rtcFrameData DD 0eH
 	DD	00H
 	DQ	FLAT:SDL_main$rtcVarDesc
-	ORG $+8
-SDL_main$rtcVarDesc DD 0408H
-	DD	020H
-	DQ	FLAT:SDL_main$rtcName$13
-	DD	03d8H
-	DD	010H
-	DQ	FLAT:SDL_main$rtcName$12
-	DD	0370H
-	DD	050H
-	DQ	FLAT:SDL_main$rtcName$11
-	DD	0348H
-	DD	08H
-	DQ	FLAT:SDL_main$rtcName$10
-	DD	0248H
-	DD	08H
-	DQ	FLAT:SDL_main$rtcName$9
-	DD	0208H
-	DD	028H
-	DQ	FLAT:SDL_main$rtcName$8
-	DD	01d8H
-	DD	010H
-	DQ	FLAT:SDL_main$rtcName$7
-	DD	0194H
-	DD	04H
-	DQ	FLAT:SDL_main$rtcName$6
-	DD	0158H
-	DD	020H
-	DQ	FLAT:SDL_main$rtcName$5
-	DD	0118H
-	DD	020H
-	DQ	FLAT:SDL_main$rtcName$4
-	DD	0f8H
-	DD	08H
-	DQ	FLAT:SDL_main$rtcName$3
-	DD	0a8H
-	DD	038H
-	DQ	FLAT:SDL_main$rtcName$2
-	DD	078H
-	DD	018H
-	DQ	FLAT:SDL_main$rtcName$1
-	DD	048H
-	DD	0cH
-	DQ	FLAT:SDL_main$rtcName$0
 CONST	ENDS
 ;	COMDAT xdata
 xdata	SEGMENT
@@ -543,431 +493,12 @@ __JustMyCode_Default ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtp /RTCsu /ZI
 ; File E:\CPP-Programming\Lama\Lama\Lama\main.c
-;	COMDAT animation_free_frames
-_TEXT	SEGMENT
-p_anim$ = 224
-animation_free_frames PROC				; COMDAT
-
-; 110  : {
-
-$LN4:
-	mov	QWORD PTR [rsp+8], rcx
-	push	rbp
-	push	rdi
-	sub	rsp, 232				; 000000e8H
-	lea	rbp, QWORD PTR [rsp+32]
-	mov	rdi, rsp
-	mov	ecx, 58					; 0000003aH
-	mov	eax, -858993460				; ccccccccH
-	rep stosd
-	mov	rcx, QWORD PTR [rsp+264]
-	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
-	call	__CheckForDebuggerJustMyCode
-
-; 111  :     if(p_anim->frames)
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	cmp	QWORD PTR [rax+16], 0
-	je	SHORT $LN2@animation_
-
-; 112  :         free(p_anim->frames);
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rcx, QWORD PTR [rax+16]
-	call	QWORD PTR __imp_free
-$LN2@animation_:
-
-; 113  : }
-
-	lea	rsp, QWORD PTR [rbp+200]
-	pop	rdi
-	pop	rbp
-	ret	0
-animation_free_frames ENDP
-_TEXT	ENDS
-; Function compile flags: /Odtp /RTCsu /ZI
-; File E:\CPP-Programming\Lama\Lama\Lama\main.c
-;	COMDAT animation_draw
-_TEXT	SEGMENT
-p_renderer$ = 224
-p_anim$ = 232
-dest$ = 240
-animation_draw PROC					; COMDAT
-
-; 100  : {
-
-$LN3:
-	mov	QWORD PTR [rsp+24], r8
-	mov	QWORD PTR [rsp+16], rdx
-	mov	QWORD PTR [rsp+8], rcx
-	push	rbp
-	push	rdi
-	sub	rsp, 248				; 000000f8H
-	lea	rbp, QWORD PTR [rsp+48]
-	mov	rdi, rsp
-	mov	ecx, 62					; 0000003eH
-	mov	eax, -858993460				; ccccccccH
-	rep stosd
-	mov	rcx, QWORD PTR [rsp+280]
-	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
-	call	__CheckForDebuggerJustMyCode
-
-; 101  :     SDL_RenderCopy(p_renderer, p_anim->texture, &p_anim->current->rect, dest);
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	r9, QWORD PTR dest$[rbp]
-	mov	r8, rax
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rcx, QWORD PTR p_renderer$[rbp]
-	call	SDL_RenderCopy
-
-; 102  : 
-; 103  :     SDL_SetRenderDrawColor(p_renderer, 0, 255, 0, 255);
-
-	mov	BYTE PTR [rsp+32], 255			; 000000ffH
-	xor	r9d, r9d
-	mov	r8b, 255				; 000000ffH
-	xor	edx, edx
-	mov	rcx, QWORD PTR p_renderer$[rbp]
-	call	SDL_SetRenderDrawColor
-
-; 104  :     SDL_RenderFillRect(p_renderer, &p_anim->current->rect);
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	rdx, rax
-	mov	rcx, QWORD PTR p_renderer$[rbp]
-	call	SDL_RenderFillRect
-
-; 105  : 
-; 106  :     animation_animate(p_anim);
-
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	call	animation_animate
-
-; 107  : }
-
-	lea	rsp, QWORD PTR [rbp+200]
-	pop	rdi
-	pop	rbp
-	ret	0
-animation_draw ENDP
-_TEXT	ENDS
-; Function compile flags: /Odtp /RTCsu /ZI
-; File E:\CPP-Programming\Lama\Lama\Lama\main.c
-;	COMDAT animation_step_forward
-_TEXT	SEGMENT
-p_anim$ = 224
-animation_step_forward PROC				; COMDAT
-
-; 94   : {
-
-$LN3:
-	mov	QWORD PTR [rsp+8], rcx
-	push	rbp
-	push	rdi
-	sub	rsp, 232				; 000000e8H
-	lea	rbp, QWORD PTR [rsp+32]
-	mov	rdi, rsp
-	mov	ecx, 58					; 0000003aH
-	mov	eax, -858993460				; ccccccccH
-	rep stosd
-	mov	rcx, QWORD PTR [rsp+264]
-	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
-	call	__CheckForDebuggerJustMyCode
-
-; 95   :     p_anim->current = p_anim->current->next;
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+16]
-	mov	QWORD PTR [rcx+8], rax
-
-; 96   :     p_anim->timer = p_anim->current->frame_time;
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	mov	eax, DWORD PTR [rax+24]
-	mov	DWORD PTR [rcx+24], eax
-
-; 97   : }
-
-	lea	rsp, QWORD PTR [rbp+200]
-	pop	rdi
-	pop	rbp
-	ret	0
-animation_step_forward ENDP
-_TEXT	ENDS
-; Function compile flags: /Odtp /RTCsu /ZI
-; File E:\CPP-Programming\Lama\Lama\Lama\main.c
-;	COMDAT animation_animate
-_TEXT	SEGMENT
-p_anim$ = 224
-animation_animate PROC					; COMDAT
-
-; 84   : {
-
-$LN4:
-	mov	QWORD PTR [rsp+8], rcx
-	push	rbp
-	push	rdi
-	sub	rsp, 232				; 000000e8H
-	lea	rbp, QWORD PTR [rsp+32]
-	mov	rdi, rsp
-	mov	ecx, 58					; 0000003aH
-	mov	eax, -858993460				; ccccccccH
-	rep stosd
-	mov	rcx, QWORD PTR [rsp+264]
-	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
-	call	__CheckForDebuggerJustMyCode
-
-; 85   :     p_anim->timer--;
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	eax, DWORD PTR [rax+24]
-	dec	eax
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	mov	DWORD PTR [rcx+24], eax
-
-; 86   :     if(p_anim->timer < 0)
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	cmp	DWORD PTR [rax+24], 0
-	jge	SHORT $LN2@animation_
-
-; 87   :     {
-; 88   :         p_anim->current = p_anim->current->next;
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+16]
-	mov	QWORD PTR [rcx+8], rax
-
-; 89   :         p_anim->timer = p_anim->current->frame_time;
-
-	mov	rax, QWORD PTR p_anim$[rbp]
-	mov	rax, QWORD PTR [rax+8]
-	mov	rcx, QWORD PTR p_anim$[rbp]
-	mov	eax, DWORD PTR [rax+24]
-	mov	DWORD PTR [rcx+24], eax
-$LN2@animation_:
-
-; 90   :     }
-; 91   : }
-
-	lea	rsp, QWORD PTR [rbp+200]
-	pop	rdi
-	pop	rbp
-	ret	0
-animation_animate ENDP
-_TEXT	ENDS
-; Function compile flags: /Odtp /RTCsu /ZI
-; File E:\CPP-Programming\Lama\Lama\Lama\main.c
-;	COMDAT animation_create
-_TEXT	SEGMENT
-anim$ = 8
-frames$ = 72
-index$ = 100
-tv71 = 308
-tv164 = 312
-$T4 = 352
-p_texture$ = 360
-p_rects$ = 368
-p_frame_count$ = 376
-p_frame_time$ = 384
-p_type$ = 392
-animation_create PROC					; COMDAT
-
-; 54   : {
-
-$LN9:
-	mov	DWORD PTR [rsp+32], r9d
-	mov	QWORD PTR [rsp+24], r8
-	mov	QWORD PTR [rsp+16], rdx
-	mov	QWORD PTR [rsp+8], rcx
-	push	rbp
-	push	rsi
-	push	rdi
-	sub	rsp, 352				; 00000160H
-	lea	rbp, QWORD PTR [rsp+32]
-	mov	rdi, rsp
-	mov	ecx, 88					; 00000058H
-	mov	eax, -858993460				; ccccccccH
-	rep stosd
-	mov	rcx, QWORD PTR [rsp+392]
-	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
-	call	__CheckForDebuggerJustMyCode
-
-; 55   :     animation       anim; 
-; 56   :     struct frame*   frames;
-; 57   :     int             index;
-; 58   : 
-; 59   :     frames          = (struct frame*)calloc(p_frame_count, sizeof(struct frame));
-
-	movsxd	rax, DWORD PTR p_frame_count$[rbp]
-	mov	edx, 32					; 00000020H
-	mov	rcx, rax
-	call	QWORD PTR __imp_calloc
-	mov	QWORD PTR frames$[rbp], rax
-
-; 60   :     anim.current    = frames;
-
-	mov	rax, QWORD PTR frames$[rbp]
-	mov	QWORD PTR anim$[rbp+8], rax
-
-; 61   :     anim.frames     = frames;
-
-	mov	rax, QWORD PTR frames$[rbp]
-	mov	QWORD PTR anim$[rbp+16], rax
-
-; 62   :     anim.texture    = p_texture;
-
-	mov	rax, QWORD PTR p_texture$[rbp]
-	mov	QWORD PTR anim$[rbp], rax
-
-; 63   :     anim.timer      = p_frame_time;
-
-	mov	eax, DWORD PTR p_frame_time$[rbp]
-	mov	DWORD PTR anim$[rbp+24], eax
-
-; 64   : 
-; 65   :     switch(p_type)
-
-	mov	eax, DWORD PTR p_type$[rbp]
-	mov	DWORD PTR tv71[rbp], eax
-	cmp	DWORD PTR tv71[rbp], 0
-	je	SHORT $LN7@animation_
-	jmp	$LN2@animation_
-$LN7@animation_:
-
-; 66   :     {
-; 67   :         case LOOP:
-; 68   :         // Create the animation in here
-; 69   :             for(index = 0; index < p_frame_count - 1; index++) //loop through all frames until the last one
-
-	mov	DWORD PTR index$[rbp], 0
-	jmp	SHORT $LN6@animation_
-$LN4@animation_:
-	mov	eax, DWORD PTR index$[rbp]
-	inc	eax
-	mov	DWORD PTR index$[rbp], eax
-$LN6@animation_:
-	mov	eax, DWORD PTR p_frame_count$[rbp]
-	dec	eax
-	cmp	DWORD PTR index$[rbp], eax
-	jge	SHORT $LN5@animation_
-
-; 70   :             {
-; 71   :                 frames[index].rect          = p_rects[index];
-
-	movsxd	rax, DWORD PTR index$[rbp]
-	imul	rax, rax, 16
-	movsxd	rcx, DWORD PTR index$[rbp]
-	imul	rcx, rcx, 32				; 00000020H
-	mov	rdx, QWORD PTR frames$[rbp]
-	mov	r8, QWORD PTR p_rects$[rbp]
-	lea	rdi, QWORD PTR [rdx+rcx]
-	lea	rsi, QWORD PTR [r8+rax]
-	mov	ecx, 16
-	rep movsb
-
-; 72   :                 frames[index].frame_time    = p_frame_time;
-
-	movsxd	rax, DWORD PTR index$[rbp]
-	imul	rax, rax, 32				; 00000020H
-	mov	rcx, QWORD PTR frames$[rbp]
-	mov	edx, DWORD PTR p_frame_time$[rbp]
-	mov	DWORD PTR [rcx+rax+24], edx
-
-; 73   :                 frames[index].next          = &frames[index + 1];
-
-	mov	eax, DWORD PTR index$[rbp]
-	inc	eax
-	cdqe
-	imul	rax, rax, 32				; 00000020H
-	mov	rcx, QWORD PTR frames$[rbp]
-	add	rcx, rax
-	mov	rax, rcx
-	movsxd	rcx, DWORD PTR index$[rbp]
-	imul	rcx, rcx, 32				; 00000020H
-	mov	rdx, QWORD PTR frames$[rbp]
-	mov	QWORD PTR [rdx+rcx+16], rax
-
-; 74   :             }
-
-	jmp	SHORT $LN4@animation_
-$LN5@animation_:
-
-; 75   :             frames[index].rect          = p_rects[index];
-
-	movsxd	rax, DWORD PTR index$[rbp]
-	imul	rax, rax, 16
-	movsxd	rcx, DWORD PTR index$[rbp]
-	imul	rcx, rcx, 32				; 00000020H
-	mov	rdx, QWORD PTR frames$[rbp]
-	mov	rdi, QWORD PTR p_rects$[rbp]
-	mov	QWORD PTR tv164[rbp], rdi
-	lea	rdi, QWORD PTR [rdx+rcx]
-	mov	rcx, QWORD PTR tv164[rbp]
-	lea	rsi, QWORD PTR [rcx+rax]
-	mov	ecx, 16
-	rep movsb
-
-; 76   :             frames[index].frame_time    = p_frame_time;
-
-	movsxd	rax, DWORD PTR index$[rbp]
-	imul	rax, rax, 32				; 00000020H
-	mov	rcx, QWORD PTR frames$[rbp]
-	mov	edx, DWORD PTR p_frame_time$[rbp]
-	mov	DWORD PTR [rcx+rax+24], edx
-
-; 77   :             frames[index].next          = frames;
-
-	movsxd	rax, DWORD PTR index$[rbp]
-	imul	rax, rax, 32				; 00000020H
-	mov	rcx, QWORD PTR frames$[rbp]
-	mov	rdx, QWORD PTR frames$[rbp]
-	mov	QWORD PTR [rcx+rax+16], rdx
-$LN2@animation_:
-
-; 78   :         break;
-; 79   :     }
-; 80   :     return anim;
-
-	lea	rax, QWORD PTR anim$[rbp]
-	mov	rdi, QWORD PTR $T4[rbp]
-	mov	rsi, rax
-	mov	ecx, 32					; 00000020H
-	rep movsb
-	mov	rax, QWORD PTR $T4[rbp]
-
-; 81   : }
-
-	mov	rdi, rax
-	lea	rcx, QWORD PTR [rbp-32]
-	lea	rdx, OFFSET FLAT:animation_create$rtcFrameData
-	call	_RTC_CheckStackVars
-	mov	rax, rdi
-	lea	rsp, QWORD PTR [rbp+320]
-	pop	rdi
-	pop	rsi
-	pop	rbp
-	ret	0
-animation_create ENDP
-_TEXT	ENDS
-; Function compile flags: /Odtp /RTCsu /ZI
-; File E:\CPP-Programming\Lama\Lama\Lama\main.c
 ;	COMDAT error_msg
 _TEXT	SEGMENT
 msg$ = 224
 error_msg PROC						; COMDAT
 
-; 16   : {
+; 18   : {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
@@ -983,17 +514,17 @@ $LN3:
 	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
 	call	__CheckForDebuggerJustMyCode
 
-; 17   :     printf("Error: %s \n", msg);
+; 19   :     printf("Error: %s \n", msg);
 
 	mov	rdx, QWORD PTR msg$[rbp]
 	lea	rcx, OFFSET FLAT:??_C@_0M@KMABGBDJ@Error?3?5?$CFs?5?6@
 	call	printf
 
-; 18   :     return -1;
+; 20   :     return -1;
 
 	mov	eax, -1
 
-; 19   : }
+; 21   : }
 
 	lea	rsp, QWORD PTR [rbp+200]
 	pop	rdi
@@ -1078,116 +609,224 @@ _TEXT	ENDS
 ; File E:\CPP-Programming\Lama\Lama\Lama\main.c
 ;	COMDAT SDL_main
 _TEXT	SEGMENT
-mouse_input$ = 8
-window_settings$ = 56
-event$ = 104
-mouse_position_on_grid$ = 184
-app$ = 216
-grid_layer$ = 280
-background_color$ = 340
-alpha_color_key$ = 372
-grass_source_rect$ = 408
-grass_pool$ = 456
-rawtime$ = 520
-time_info$ = 552
-texture$ = 584
-surface$ = 616
-window$ = 648
-renderer$ = 680
-running$ = 708
-animation_step$ = 740
-grass_index$ = 776
-rects$ = 816
-destination$ = 920
-anim$ = 968
-$T17 = 1608
-$T18 = 1680
-tv210 = 1700
-__$ArrayPad$ = 1704
-argc$ = 1744
-argv$ = 1752
+index$ = 4
+mouse_input$ = 40
+window_settings$ = 88
+event$ = 136
+mouse_position_on_grid$ = 216
+rawtime$ = 248
+alpha_color_key$ = 276
+background_color$ = 308
+time_info$ = 344
+texture$ = 376
+surface$ = 408
+window$ = 440
+renderer$ = 472
+running$ = 500
+grid_layer$ = 536
+grass_pool$ = 600
+grass_animation$ = 664
+grass_frame_info$ = 736
+sheep_pool$ = 888
+sheep_animations$ = 960
+sheep_frame_infos$ = 1120
+frame_count$ = 1332
+spawn_at$ = 1368
+$T17 = 2168
+$T18 = 2232
+$T19 = 2304
+tv397 = 2356
+__$ArrayPad$ = 2360
+argc$ = 2400
+argv$ = 2408
 SDL_main PROC						; COMDAT
 
-; 154  : {
+; 43   : {
 
-$LN16:
+$LN21:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	push	rbp
 	push	rsi
 	push	rdi
-	sub	rsp, 1776				; 000006f0H
+	sub	rsp, 2432				; 00000980H
 	lea	rbp, QWORD PTR [rsp+64]
 	mov	rdi, rsp
-	mov	ecx, 444				; 000001bcH
+	mov	ecx, 608				; 00000260H
 	mov	eax, -858993460				; ccccccccH
 	rep stosd
-	mov	ecx, DWORD PTR [rsp+1816]
+	mov	ecx, DWORD PTR [rsp+2472]
 	mov	rax, QWORD PTR __security_cookie
 	xor	rax, rbp
 	mov	QWORD PTR __$ArrayPad$[rbp], rax
 	lea	rcx, OFFSET FLAT:__8BF91AE9_main@c
 	call	__CheckForDebuggerJustMyCode
 
-; 155  :     mouse           mouse_input;
-; 156  :     window_info     window_settings;
-; 157  :     SDL_Event       event;
-; 158  :     vector2         mouse_position_on_grid;
-; 159  :     application     app;
-; 160  :     grid            grid_layer;
-; 161  :     SDL_Color       background_color;
-; 162  :     Uint32          alpha_color_key;
-; 163  :     SDL_Rect        grass_source_rect;
-; 164  :     grass_field     grass_pool;
-; 165  :     time_t          rawtime;
-; 166  :     struct tm*      time_info               = NULL;
+; 44   :     int             index;
+; 45   :     mouse           mouse_input;
+; 46   :     window_info     window_settings;
+; 47   :     SDL_Event       event;
+; 48   :     vector2         mouse_position_on_grid;
+; 49   :     time_t          rawtime;
+; 50   :     Uint32          alpha_color_key;
+; 51   :     SDL_Color       background_color        = { 214, 185, 123, 255};
+
+	mov	BYTE PTR background_color$[rbp], 214	; 000000d6H
+	mov	BYTE PTR background_color$[rbp+1], 185	; 000000b9H
+	mov	BYTE PTR background_color$[rbp+2], 123	; 0000007bH
+	mov	BYTE PTR background_color$[rbp+3], 255	; 000000ffH
+
+; 52   :     struct tm*      time_info               = NULL;
 
 	mov	QWORD PTR time_info$[rbp], 0
 
-; 167  :     SDL_Texture*    texture                 = NULL;
+; 53   :     SDL_Texture*    texture                 = NULL;
 
 	mov	QWORD PTR texture$[rbp], 0
 
-; 168  :     SDL_Surface*    surface                 = NULL;
+; 54   :     SDL_Surface*    surface                 = NULL;
 
 	mov	QWORD PTR surface$[rbp], 0
 
-; 169  :     SDL_Window*     window                  = NULL;
+; 55   :     SDL_Window*     window                  = NULL;
 
 	mov	QWORD PTR window$[rbp], 0
 
-; 170  :     SDL_Renderer*   renderer                = NULL;
+; 56   :     SDL_Renderer*   renderer                = NULL;
 
 	mov	QWORD PTR renderer$[rbp], 0
 
-; 171  :     bool            running                 = true;
+; 57   :     bool            running                 = true;
 
 	mov	BYTE PTR running$[rbp], 1
 
-; 172  :     int             animation_step          = 32;
+; 58   : 
+; 59   :     grid            grid_layer;
+; 60   : 
+; 61   :     grass_field     grass_pool;
+; 62   :     animation       grass_animation;
+; 63   :     frame_data      grass_frame_info[6] = { {.rect = {0  , 0, 32, 32}, .frame_time = 2000 },
 
-	mov	DWORD PTR animation_step$[rbp], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp], 0
+	mov	DWORD PTR grass_frame_info$[rbp+4], 0
+	mov	DWORD PTR grass_frame_info$[rbp+8], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+12], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+16], 2000 ; 000007d0H
+	mov	DWORD PTR grass_frame_info$[rbp+20], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+24], 0
+	mov	DWORD PTR grass_frame_info$[rbp+28], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+32], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+36], 2000 ; 000007d0H
+	mov	DWORD PTR grass_frame_info$[rbp+40], 64	; 00000040H
+	mov	DWORD PTR grass_frame_info$[rbp+44], 0
+	mov	DWORD PTR grass_frame_info$[rbp+48], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+52], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+56], 2000 ; 000007d0H
+	mov	DWORD PTR grass_frame_info$[rbp+60], 96	; 00000060H
+	mov	DWORD PTR grass_frame_info$[rbp+64], 0
+	mov	DWORD PTR grass_frame_info$[rbp+68], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+72], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+76], 2000 ; 000007d0H
+	mov	DWORD PTR grass_frame_info$[rbp+80], 128 ; 00000080H
+	mov	DWORD PTR grass_frame_info$[rbp+84], 0
+	mov	DWORD PTR grass_frame_info$[rbp+88], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+92], 32	; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+96], 2000 ; 000007d0H
+	mov	DWORD PTR grass_frame_info$[rbp+100], 160 ; 000000a0H
+	mov	DWORD PTR grass_frame_info$[rbp+104], 0
+	mov	DWORD PTR grass_frame_info$[rbp+108], 32 ; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+112], 32 ; 00000020H
+	mov	DWORD PTR grass_frame_info$[rbp+116], 2000 ; 000007d0H
 
-; 173  : 
-; 174  :     // Set seed based on time
-; 175  :     time(&rawtime);
+; 64   :                                             {.rect = {32 , 0, 32, 32}, .frame_time = 2000 },
+; 65   :                                             {.rect = {64 , 0, 32, 32}, .frame_time = 2000 },
+; 66   :                                             {.rect = {96 , 0, 32, 32}, .frame_time = 2000 },
+; 67   :                                             {.rect = {128, 0, 32, 32}, .frame_time = 2000 },
+; 68   :                                             {.rect = {160, 0, 32, 32}, .frame_time = 2000 } };
+; 69   :     
+; 70   :     sheep_flock     sheep_pool;
+; 71   :     animation       sheep_animations[SHEEP_ANIMATION_COUNT];
+; 72   :     frame_data      sheep_frame_infos[SHEEP_ANIMATION_COUNT][3] = 
+
+	mov	DWORD PTR sheep_frame_infos$[rbp], 0
+	mov	DWORD PTR sheep_frame_infos$[rbp+4], 32	; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+8], 32	; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+12], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+16], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+20], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+24], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+28], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+32], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+36], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+40], 128 ; 00000080H
+	mov	DWORD PTR sheep_frame_infos$[rbp+44], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+48], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+52], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+56], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+60], 0
+	mov	DWORD PTR sheep_frame_infos$[rbp+64], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+68], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+72], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+76], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+80], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+84], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+88], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+92], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+96], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+100], 128 ; 00000080H
+	mov	DWORD PTR sheep_frame_infos$[rbp+104], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+108], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+112], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+116], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+120], 0
+	mov	DWORD PTR sheep_frame_infos$[rbp+124], 96 ; 00000060H
+	mov	DWORD PTR sheep_frame_infos$[rbp+128], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+132], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+136], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+140], 64 ; 00000040H
+	mov	DWORD PTR sheep_frame_infos$[rbp+144], 96 ; 00000060H
+	mov	DWORD PTR sheep_frame_infos$[rbp+148], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+152], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+156], 2000 ; 000007d0H
+	mov	DWORD PTR sheep_frame_infos$[rbp+160], 128 ; 00000080H
+	mov	DWORD PTR sheep_frame_infos$[rbp+164], 96 ; 00000060H
+	mov	DWORD PTR sheep_frame_infos$[rbp+168], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+172], 32 ; 00000020H
+	mov	DWORD PTR sheep_frame_infos$[rbp+176], 2000 ; 000007d0H
+
+; 73   :     { 
+; 74   :         { {.rect = {0 ,  32, 32, 32}, .frame_time = 2000 },
+; 75   :           {.rect = {64,  32, 32, 32}, .frame_time = 2000 },
+; 76   :           {.rect = {128, 32, 32, 32}, .frame_time = 2000 } },
+; 77   : 
+; 78   :         { {.rect = {0 ,  64, 32, 32}, .frame_time = 2000 },
+; 79   :           {.rect = {64,  64, 32, 32}, .frame_time = 2000 },
+; 80   :           {.rect = {128, 64, 32, 32}, .frame_time = 2000 } },
+; 81   : 
+; 82   :         { {.rect = {0 ,  96, 32, 32}, .frame_time = 2000 },
+; 83   :           {.rect = {64,  96, 32, 32}, .frame_time = 2000 },
+; 84   :           {.rect = {128, 96, 32, 32}, .frame_time = 2000 } }
+; 85   :     };
+; 86   : 
+; 87   :     // Set seed based on time
+; 88   :     time(&rawtime);
 
 	lea	rcx, QWORD PTR rawtime$[rbp]
 	call	time
 
-; 176  :     time_info = (struct tm*) malloc(sizeof(struct tm));
+; 89   :     time_info = (struct tm*) malloc(sizeof(struct tm));
 
 	mov	ecx, 36					; 00000024H
 	call	QWORD PTR __imp_malloc
 	mov	QWORD PTR time_info$[rbp], rax
 
-; 177  :     localtime_s(time_info , &rawtime);
+; 90   :     localtime_s(time_info , &rawtime);
 
 	lea	rdx, QWORD PTR rawtime$[rbp]
 	mov	rcx, QWORD PTR time_info$[rbp]
 	call	localtime_s
 
-; 178  :     srand(time_info->tm_year + time_info->tm_mon + time_info->tm_min + time_info->tm_sec);
+; 91   :     srand(time_info->tm_year + time_info->tm_mon + time_info->tm_min + time_info->tm_sec);
 
 	mov	rax, QWORD PTR time_info$[rbp]
 	mov	eax, DWORD PTR [rax+20]
@@ -1200,56 +839,53 @@ $LN16:
 	mov	ecx, eax
 	call	QWORD PTR __imp_srand
 
-; 179  :     
-; 180  :     
-; 181  : 
-; 182  :     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
+; 92   :     
+; 93   :     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
 
 	mov	ecx, 62001				; 0000f231H
 	call	SDL_Init
 	test	eax, eax
-	je	SHORT $LN8@SDL_main
+	je	SHORT $LN11@SDL_main
 
-; 183  :         return error_msg("Could not Initialise SDL");
+; 94   :         return error_msg("Could not Initialise SDL");
 
 	lea	rcx, OFFSET FLAT:??_C@_0BJ@JPHBGNOG@Could?5not?5Initialise?5SDL@
 	call	error_msg
 	jmp	$LN1@SDL_main
-$LN8@SDL_main:
+$LN11@SDL_main:
 
-; 184  : 
-; 185  :     memset(&mouse_input, NULL, sizeof(mouse_input));
+; 95   : 
+; 96   :     memset(&mouse_input, NULL, sizeof(mouse_input));
 
 	mov	r8d, 12
 	xor	edx, edx
 	lea	rcx, QWORD PTR mouse_input$[rbp]
 	call	memset
 
-; 186  : 
-; 187  :     window_settings.title = "Lama";
+; 97   : 
+; 98   :     window_settings.title = "Lama";
 
 	lea	rax, OFFSET FLAT:??_C@_04BLKNCPFJ@Lama@
 	mov	QWORD PTR window_settings$[rbp], rax
 
-; 188  :     window_settings.dimension.x = 640;
+; 99   :     window_settings.dimension.x = 640;
 
 	mov	DWORD PTR window_settings$[rbp+16], 640	; 00000280H
 
-; 189  :     window_settings.dimension.y = 640;
+; 100  :     window_settings.dimension.y = 640;
 
 	mov	DWORD PTR window_settings$[rbp+20], 640	; 00000280H
 
-; 190  :     window_settings.position.x = SDL_WINDOWPOS_CENTERED;
+; 101  :     window_settings.position.x = SDL_WINDOWPOS_CENTERED;
 
 	mov	DWORD PTR window_settings$[rbp+8], 805240832 ; 2fff0000H
 
-; 191  :     window_settings.position.y = SDL_WINDOWPOS_CENTERED;
+; 102  :     window_settings.position.y = SDL_WINDOWPOS_CENTERED;
 
 	mov	DWORD PTR window_settings$[rbp+12], 805240832 ; 2fff0000H
 
-; 192  :     
-; 193  : 
-; 194  :     if(!grid_init(&grid_layer, window_settings.dimension, 64, 0xFF0000FF))
+; 103  : 
+; 104  :     if(!grid_init(&grid_layer, window_settings.dimension, 64, 0xFF0000FF))
 
 	mov	r9d, -16776961				; ff0000ffH
 	mov	r8d, 64					; 00000040H
@@ -1258,17 +894,17 @@ $LN8@SDL_main:
 	call	grid_init
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN9@SDL_main
+	jne	SHORT $LN12@SDL_main
 
-; 195  :         return error_msg("Could not initialise grid");
+; 105  :         return error_msg("Could not initialise grid");
 
 	lea	rcx, OFFSET FLAT:??_C@_0BK@OADPNOMO@Could?5not?5initialise?5grid@
 	call	error_msg
 	jmp	$LN1@SDL_main
-$LN9@SDL_main:
+$LN12@SDL_main:
 
-; 196  : 
-; 197  :     window = SDL_CreateWindow(window_settings.title,
+; 106  : 
+; 107  :     window = SDL_CreateWindow(window_settings.title,
 
 	mov	DWORD PTR [rsp+40], 0
 	mov	eax, DWORD PTR window_settings$[rbp+20]
@@ -1280,13 +916,13 @@ $LN9@SDL_main:
 	call	SDL_CreateWindow
 	mov	QWORD PTR window$[rbp], rax
 
-; 198  :                               window_settings.position.x,
-; 199  :                               window_settings.position.y,
-; 200  :                               window_settings.dimension.x,
-; 201  :                               window_settings.dimension.y,
-; 202  :                               NULL);
-; 203  : 
-; 204  :     renderer = SDL_CreateRenderer(window,
+; 108  :                               window_settings.position.x,
+; 109  :                               window_settings.position.y,
+; 110  :                               window_settings.dimension.x,
+; 111  :                               window_settings.dimension.y,
+; 112  :                               NULL);
+; 113  : 
+; 114  :     renderer = SDL_CreateRenderer(window,
 
 	xor	r8d, r8d
 	xor	edx, edx
@@ -1294,11 +930,11 @@ $LN9@SDL_main:
 	call	SDL_CreateRenderer
 	mov	QWORD PTR renderer$[rbp], rax
 
-; 205  :                                   NULL, 
-; 206  :                                   NULL);
-; 207  : 
-; 208  : 
-; 209  :     surface = SDL_LoadBMP("texture.bmp");
+; 115  :                                   NULL, 
+; 116  :                                   NULL);
+; 117  : 
+; 118  : 
+; 119  :     surface = SDL_LoadBMP("texture.bmp");
 
 	lea	rdx, OFFSET FLAT:??_C@_02JDPG@rb@
 	lea	rcx, OFFSET FLAT:??_C@_0M@INKEKBKD@texture?4bmp@
@@ -1308,321 +944,333 @@ $LN9@SDL_main:
 	call	SDL_LoadBMP_RW
 	mov	QWORD PTR surface$[rbp], rax
 
-; 210  : 
-; 211  :     alpha_color_key = (244 << 16) + (93 << 8) + (146 << 0);
+; 120  :     alpha_color_key = (244 << 16) + (93 << 8) + (146 << 0);
 
 	mov	DWORD PTR alpha_color_key$[rbp], 16014738 ; 00f45d92H
 
-; 212  :     if(SDL_SetColorKey(surface, SDL_TRUE, alpha_color_key) != 0)
+; 121  :     if(SDL_SetColorKey(surface, SDL_TRUE, alpha_color_key) != 0)
 
 	mov	r8d, DWORD PTR alpha_color_key$[rbp]
 	mov	edx, 1
 	mov	rcx, QWORD PTR surface$[rbp]
 	call	SDL_SetColorKey
 	test	eax, eax
-	je	SHORT $LN10@SDL_main
+	je	SHORT $LN13@SDL_main
 
-; 213  :         return error_msg("Surface not valid");
+; 122  :         return error_msg("Surface not valid");
 
 	lea	rcx, OFFSET FLAT:??_C@_0BC@DPMPNCOK@Surface?5not?5valid@
 	call	error_msg
 	jmp	$LN1@SDL_main
-$LN10@SDL_main:
+$LN13@SDL_main:
 
-; 214  : 
-; 215  :     texture = SDL_CreateTextureFromSurface(renderer, surface);
+; 123  :     texture = SDL_CreateTextureFromSurface(renderer, surface);
 
 	mov	rdx, QWORD PTR surface$[rbp]
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	SDL_CreateTextureFromSurface
 	mov	QWORD PTR texture$[rbp], rax
 
-; 216  :     SDL_FreeSurface(surface);
+; 124  :     SDL_FreeSurface(surface);
 
 	mov	rcx, QWORD PTR surface$[rbp]
 	call	SDL_FreeSurface
 
-; 217  : 
-; 218  :     background_color.r = 214;
+; 125  : 
+; 126  :     int frame_count = 6;
 
-	mov	BYTE PTR background_color$[rbp], 214	; 000000d6H
+	mov	DWORD PTR frame_count$[rbp], 6
 
-; 219  :     background_color.g = 185;
+; 127  :     grass_animation = animation_create(texture, 
 
-	mov	BYTE PTR background_color$[rbp+1], 185	; 000000b9H
+	mov	DWORD PTR [rsp+32], 2
+	mov	r9d, DWORD PTR frame_count$[rbp]
+	lea	r8, QWORD PTR grass_frame_info$[rbp]
+	mov	rdx, QWORD PTR texture$[rbp]
+	lea	rcx, QWORD PTR $T17[rbp]
+	call	animation_create
+	lea	rcx, QWORD PTR grass_animation$[rbp]
+	mov	rdi, rcx
+	mov	rsi, rax
+	mov	ecx, 40					; 00000028H
+	rep movsb
 
-; 220  :     background_color.b = 123;
+; 128  :                                        grass_frame_info, 
+; 129  :                                        frame_count,
+; 130  :                                        ONCE);
+; 131  :     grass_field_init(&grass_pool,
 
-	mov	BYTE PTR background_color$[rbp+2], 123	; 0000007bH
-
-; 221  :     background_color.a = 255;
-
-	mov	BYTE PTR background_color$[rbp+3], 255	; 000000ffH
-
-; 222  : 
-; 223  :     app.grid_layer = &grid_layer;
-
-	lea	rax, QWORD PTR grid_layer$[rbp]
-	mov	QWORD PTR app$[rbp+16], rax
-
-; 224  :     app.mouse_input = &mouse_input;
-
-	lea	rax, QWORD PTR mouse_input$[rbp]
-	mov	QWORD PTR app$[rbp+24], rax
-
-; 225  :     app.renderer = renderer;
-
-	mov	rax, QWORD PTR renderer$[rbp]
-	mov	QWORD PTR app$[rbp], rax
-
-; 226  :     app.window = window;
-
-	mov	rax, QWORD PTR window$[rbp]
-	mov	QWORD PTR app$[rbp+8], rax
-
-; 227  : 
-; 228  :     grass_source_rect.x = 0;
-
-	mov	DWORD PTR grass_source_rect$[rbp], 0
-
-; 229  :     grass_source_rect.y = 0;
-
-	mov	DWORD PTR grass_source_rect$[rbp+4], 0
-
-; 230  :     grass_source_rect.w = 32;
-
-	mov	DWORD PTR grass_source_rect$[rbp+8], 32	; 00000020H
-
-; 231  :     grass_source_rect.h = 32;
-
-	mov	DWORD PTR grass_source_rect$[rbp+12], 32 ; 00000020H
-
-; 232  : 
-; 233  :     grass_field_init(&grass_pool,
-
-	lea	rax, QWORD PTR $T18[rbp]
-	lea	rcx, QWORD PTR grass_source_rect$[rbp]
+	lea	rax, QWORD PTR $T19[rbp]
+	lea	rcx, QWORD PTR grass_animation$[rbp]
 	mov	rdi, rax
 	mov	rsi, rcx
-	mov	ecx, 16
+	mov	ecx, 40					; 00000028H
 	rep movsb
 	mov	eax, DWORD PTR grid_layer$[rbp]
 	mov	DWORD PTR [rsp+56], eax
-	mov	eax, DWORD PTR animation_step$[rbp]
-	mov	DWORD PTR [rsp+48], eax
+	mov	DWORD PTR [rsp+48], 10000		; 00002710H
 	mov	DWORD PTR [rsp+40], 2000		; 000007d0H
-	mov	DWORD PTR [rsp+32], 500			; 000001f4H
-	lea	r9, QWORD PTR $T18[rbp]
+	mov	DWORD PTR [rsp+32], 1000		; 000003e8H
+	lea	r9, QWORD PTR $T19[rbp]
 	mov	r8, QWORD PTR grid_layer$[rbp+4]
 	lea	rdx, QWORD PTR grid_layer$[rbp]
 	lea	rcx, QWORD PTR grass_pool$[rbp]
 	call	grass_field_init
 
-; 234  :                            &grid_layer,
-; 235  :                            grid_layer.dimensions,
-; 236  :                            grass_source_rect,
-; 237  :                            500,
-; 238  :                            2000,
-; 239  :                            animation_step,
-; 240  :                            grid_layer.cell_size);
-; 241  : 
-; 242  :     vector2 grass_index = {4, 6};
+; 132  :                            &grid_layer,
+; 133  :                            grid_layer.dimensions,
+; 134  :                            grass_animation,
+; 135  :                            1000,
+; 136  :                            2000,
+; 137  :                            10000,
+; 138  :                            grid_layer.cell_size);
+; 139  : 
+; 140  :     frame_count = 3;
 
-	mov	DWORD PTR grass_index$[rbp], 4
-	mov	DWORD PTR grass_index$[rbp+4], 6
+	mov	DWORD PTR frame_count$[rbp], 3
 
-; 243  : 
-; 244  :     SDL_Rect rects[5] = { { 0, 0, 32, 32},
+; 141  :     for(index = 0; index < SHEEP_ANIMATION_COUNT; index++)
 
-	mov	DWORD PTR rects$[rbp], 0
-	mov	DWORD PTR rects$[rbp+4], 0
-	mov	DWORD PTR rects$[rbp+8], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+12], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+16], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+20], 0
-	mov	DWORD PTR rects$[rbp+24], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+28], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+32], 64		; 00000040H
-	mov	DWORD PTR rects$[rbp+36], 0
-	mov	DWORD PTR rects$[rbp+40], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+44], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+48], 96		; 00000060H
-	mov	DWORD PTR rects$[rbp+52], 0
-	mov	DWORD PTR rects$[rbp+56], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+60], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+64], 128		; 00000080H
-	mov	DWORD PTR rects$[rbp+68], 0
-	mov	DWORD PTR rects$[rbp+72], 32		; 00000020H
-	mov	DWORD PTR rects$[rbp+76], 32		; 00000020H
-
-; 245  :                           { 32, 0, 32, 32},
-; 246  :                           { 64, 0, 32, 32},
-; 247  :                           { 96, 0, 32, 32},
-; 248  :                           { 128, 0, 32, 32} };
-; 249  : 
-; 250  :     SDL_Rect destination = { 0, 0, 128, 128 };
-
-	mov	DWORD PTR destination$[rbp], 0
-	mov	DWORD PTR destination$[rbp+4], 0
-	mov	DWORD PTR destination$[rbp+8], 128	; 00000080H
-	mov	DWORD PTR destination$[rbp+12], 128	; 00000080H
-
-; 251  : 
-; 252  :     animation anim = animation_create(texture, rects, 5, 200, LOOP);
-
-	mov	DWORD PTR [rsp+40], 0
-	mov	DWORD PTR [rsp+32], 200			; 000000c8H
-	mov	r9d, 5
-	lea	r8, QWORD PTR rects$[rbp]
-	mov	rdx, QWORD PTR texture$[rbp]
-	lea	rcx, QWORD PTR $T17[rbp]
-	call	animation_create
-	lea	rcx, QWORD PTR anim$[rbp]
-	mov	rdi, rcx
-	mov	rsi, rax
-	mov	ecx, 32					; 00000020H
-	rep movsb
+	mov	DWORD PTR index$[rbp], 0
+	jmp	SHORT $LN4@SDL_main
 $LN2@SDL_main:
+	mov	eax, DWORD PTR index$[rbp]
+	inc	eax
+	mov	DWORD PTR index$[rbp], eax
+$LN4@SDL_main:
+	cmp	DWORD PTR index$[rbp], 3
+	jge	SHORT $LN3@SDL_main
 
-; 253  : 
-; 254  :     while(running)
+; 142  :         sheep_animations[index] = animation_create(texture, 
+
+	movsxd	rax, DWORD PTR index$[rbp]
+	imul	rax, rax, 60				; 0000003cH
+	lea	rax, QWORD PTR sheep_frame_infos$[rbp+rax]
+	mov	DWORD PTR [rsp+32], 2
+	mov	r9d, DWORD PTR frame_count$[rbp]
+	mov	r8, rax
+	mov	rdx, QWORD PTR texture$[rbp]
+	lea	rcx, QWORD PTR $T18[rbp]
+	call	animation_create
+	movsxd	rcx, DWORD PTR index$[rbp]
+	imul	rcx, rcx, 40				; 00000028H
+	lea	rdi, QWORD PTR sheep_animations$[rbp+rcx]
+	mov	rsi, rax
+	mov	ecx, 40					; 00000028H
+	rep movsb
+	jmp	SHORT $LN2@SDL_main
+$LN3@SDL_main:
+
+; 143  :                                                    sheep_frame_infos[index], 
+; 144  :                                                    frame_count, 
+; 145  :                                                    ONCE);
+; 146  :     sheep_flock_init(&sheep_pool, 
+
+	mov	DWORD PTR [rsp+32], 20000		; 00004e20H
+	mov	r9d, 10
+	lea	r8, QWORD PTR sheep_animations$[rbp]
+	lea	rdx, QWORD PTR grid_layer$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_init
+
+; 147  :                      &grid_layer,
+; 148  :                      sheep_animations,
+; 149  :                      10,
+; 150  :                      20000);
+; 151  : 
+; 152  : 
+; 153  :     vector2 spawn_at = { 0, 0};
+
+	mov	DWORD PTR spawn_at$[rbp], 0
+	mov	DWORD PTR spawn_at$[rbp+4], 0
+
+; 154  :     sheep_flock_spawn_sheep(&sheep_pool, spawn_at);
+
+	mov	rdx, QWORD PTR spawn_at$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_spawn_sheep
+
+; 155  :     spawn_at.x = 8;
+
+	mov	DWORD PTR spawn_at$[rbp], 8
+
+; 156  :     sheep_flock_spawn_sheep(&sheep_pool, spawn_at);
+
+	mov	rdx, QWORD PTR spawn_at$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_spawn_sheep
+
+; 157  :     spawn_at.y = 5;
+
+	mov	DWORD PTR spawn_at$[rbp+4], 5
+
+; 158  :     sheep_flock_spawn_sheep(&sheep_pool, spawn_at);
+
+	mov	rdx, QWORD PTR spawn_at$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_spawn_sheep
+
+; 159  :     spawn_at.x = 2;
+
+	mov	DWORD PTR spawn_at$[rbp], 2
+
+; 160  :     sheep_flock_spawn_sheep(&sheep_pool, spawn_at);
+
+	mov	rdx, QWORD PTR spawn_at$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_spawn_sheep
+$LN5@SDL_main:
+
+; 161  :     //animation copy = *anim;
+; 162  :     while(running)
 
 	movzx	eax, BYTE PTR running$[rbp]
 	test	eax, eax
-	je	$LN3@SDL_main
-$LN4@SDL_main:
+	je	$LN6@SDL_main
+$LN7@SDL_main:
 
-; 255  :     {
-; 256  :         // Input Events
-; 257  :         while(SDL_PollEvent(&event))
+; 163  :     {
+; 164  :         // Input Events
+; 165  :         while(SDL_PollEvent(&event))
 
 	lea	rcx, QWORD PTR event$[rbp]
 	call	SDL_PollEvent
 	test	eax, eax
-	je	SHORT $LN5@SDL_main
+	je	SHORT $LN8@SDL_main
 
-; 258  :         {
-; 259  :             switch(event.type)
+; 166  :         {
+; 167  :             switch(event.type)
 
 	mov	eax, DWORD PTR event$[rbp]
-	mov	DWORD PTR tv210[rbp], eax
-	cmp	DWORD PTR tv210[rbp], 1024		; 00000400H
-	jb	SHORT $LN6@SDL_main
-	cmp	DWORD PTR tv210[rbp], 1026		; 00000402H
-	jbe	SHORT $LN11@SDL_main
-	jmp	SHORT $LN6@SDL_main
-$LN11@SDL_main:
+	mov	DWORD PTR tv397[rbp], eax
+	cmp	DWORD PTR tv397[rbp], 1024		; 00000400H
+	jb	SHORT $LN9@SDL_main
+	cmp	DWORD PTR tv397[rbp], 1026		; 00000402H
+	jbe	SHORT $LN14@SDL_main
+	jmp	SHORT $LN9@SDL_main
+$LN14@SDL_main:
 
-; 260  :             {
-; 261  :                 case SDL_MOUSEMOTION:
-; 262  :                 case SDL_MOUSEBUTTONDOWN:
-; 263  :                 case SDL_MOUSEBUTTONUP:
-; 264  :                 mouse_input.buttons = SDL_GetMouseState(&mouse_input.position.x, 
+; 168  :             {
+; 169  :                 case SDL_MOUSEMOTION:
+; 170  :                 case SDL_MOUSEBUTTONDOWN:
+; 171  :                 case SDL_MOUSEBUTTONUP:
+; 172  :                 mouse_input.buttons = SDL_GetMouseState(&mouse_input.position.x, 
 
 	lea	rdx, QWORD PTR mouse_input$[rbp+4]
 	lea	rcx, QWORD PTR mouse_input$[rbp]
 	call	SDL_GetMouseState
 	mov	DWORD PTR mouse_input$[rbp+8], eax
-$LN6@SDL_main:
+$LN9@SDL_main:
 
-; 265  :                                                         &mouse_input.position.y);
-; 266  :                 break;
-; 267  :             }
-; 268  :         }
+; 173  :                                                         &mouse_input.position.y);
+; 174  :                 break;
+; 175  :             }
+; 176  :         }
 
-	jmp	SHORT $LN4@SDL_main
-$LN5@SDL_main:
+	jmp	SHORT $LN7@SDL_main
+$LN8@SDL_main:
 
-; 269  :         if(mouse_input.buttons & LEFT_CLICK)
+; 177  :         if(mouse_input.buttons & LEFT_CLICK)
 
 	mov	eax, DWORD PTR mouse_input$[rbp+8]
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN12@SDL_main
+	je	SHORT $LN15@SDL_main
 
-; 270  :         {
-; 271  :             mouse_position_on_grid.x = (int)(mouse_input.position.x / grid_layer.cell_size);
+; 178  :         {
+; 179  :             mouse_position_on_grid.x = (int)(mouse_input.position.x / grid_layer.cell_size);
 
 	mov	eax, DWORD PTR mouse_input$[rbp]
 	cdq
 	idiv	DWORD PTR grid_layer$[rbp]
 	mov	DWORD PTR mouse_position_on_grid$[rbp], eax
 
-; 272  :             mouse_position_on_grid.y = (int)(mouse_input.position.y / grid_layer.cell_size);
+; 180  :             mouse_position_on_grid.y = (int)(mouse_input.position.y / grid_layer.cell_size);
 
 	mov	eax, DWORD PTR mouse_input$[rbp+4]
 	cdq
 	idiv	DWORD PTR grid_layer$[rbp]
 	mov	DWORD PTR mouse_position_on_grid$[rbp+4], eax
 
-; 273  : 
-; 274  :             grass_field_toggle_active_at(&grass_pool, mouse_position_on_grid, true);
+; 181  : 
+; 182  :             grass_field_toggle_alive_at(&grass_pool, mouse_position_on_grid, true);
 
 	mov	r8b, 1
 	mov	rdx, QWORD PTR mouse_position_on_grid$[rbp]
 	lea	rcx, QWORD PTR grass_pool$[rbp]
-	call	grass_field_toggle_active_at
+	call	grass_field_toggle_alive_at
 
-; 275  :             //set_grid_data_at(&grid_layer, 
-; 276  :             //                 mouse_position_on_grid, 
-; 277  :             //                 GRASS, 
-; 278  :             //                 true);
-; 279  :         }
+; 183  :         }
 
-	jmp	SHORT $LN13@SDL_main
-$LN12@SDL_main:
+	jmp	SHORT $LN16@SDL_main
+$LN15@SDL_main:
 
-; 280  :         else if(mouse_input.buttons & RIGHT_CLICK)
+; 184  :         else if(mouse_input.buttons & MIDDLE_CLICK)
+
+	mov	eax, DWORD PTR mouse_input$[rbp+8]
+	and	eax, 2
+	test	eax, eax
+	je	SHORT $LN17@SDL_main
+
+; 185  :         {
+; 186  : 
+; 187  :         }
+
+	jmp	SHORT $LN18@SDL_main
+$LN17@SDL_main:
+
+; 188  :         else if(mouse_input.buttons & RIGHT_CLICK)
 
 	mov	eax, DWORD PTR mouse_input$[rbp+8]
 	and	eax, 4
 	test	eax, eax
-	je	SHORT $LN14@SDL_main
+	je	SHORT $LN19@SDL_main
 
-; 281  :         {
-; 282  :             mouse_position_on_grid.x = (int)(mouse_input.position.x / grid_layer.cell_size);
+; 189  :         {
+; 190  :             mouse_position_on_grid.x = (int)(mouse_input.position.x / grid_layer.cell_size);
 
 	mov	eax, DWORD PTR mouse_input$[rbp]
 	cdq
 	idiv	DWORD PTR grid_layer$[rbp]
 	mov	DWORD PTR mouse_position_on_grid$[rbp], eax
 
-; 283  :             mouse_position_on_grid.y = (int)(mouse_input.position.y / grid_layer.cell_size);
+; 191  :             mouse_position_on_grid.y = (int)(mouse_input.position.y / grid_layer.cell_size);
 
 	mov	eax, DWORD PTR mouse_input$[rbp+4]
 	cdq
 	idiv	DWORD PTR grid_layer$[rbp]
 	mov	DWORD PTR mouse_position_on_grid$[rbp+4], eax
 
-; 284  :             grass_field_toggle_active_at(&grass_pool, mouse_position_on_grid, false);
+; 192  :             grass_field_toggle_alive_at(&grass_pool, mouse_position_on_grid, false);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR mouse_position_on_grid$[rbp]
 	lea	rcx, QWORD PTR grass_pool$[rbp]
-	call	grass_field_toggle_active_at
-$LN14@SDL_main:
-$LN13@SDL_main:
+	call	grass_field_toggle_alive_at
+$LN19@SDL_main:
+$LN18@SDL_main:
+$LN16@SDL_main:
 
-; 285  :             //set_grid_data_at(&grid_layer, 
-; 286  :             //                 mouse_position_on_grid, 
-; 287  :             //                 GRASS, 
-; 288  :             //                 false);
-; 289  :         }
-; 290  : 
-; 291  :         // !Input Events
-; 292  : 
-; 293  :         // Update
-; 294  :         grass_field_update(&grass_pool,
+; 193  :         }
+; 194  : 
+; 195  :         // !Input Events
+; 196  : 
+; 197  :         // Update
+; 198  :         sheep_flock_update(&sheep_pool);
 
-	lea	rdx, QWORD PTR grid_layer$[rbp]
+	lea	rcx, QWORD PTR sheep_pool$[rbp]
+	call	sheep_flock_update
+
+; 199  :         grass_field_update(&grass_pool);
+
 	lea	rcx, QWORD PTR grass_pool$[rbp]
 	call	grass_field_update
 
-; 295  :                            &grid_layer);
-; 296  :         // !Update
-; 297  : 
-; 298  :         // Render
-; 299  :         SDL_SetRenderDrawColor(renderer,
+; 200  :         
+; 201  :         // !Update
+; 202  : 
+; 203  :         // Render
+; 204  :         SDL_SetRenderDrawColor(renderer,
 
 	movzx	eax, BYTE PTR background_color$[rbp+3]
 	mov	BYTE PTR [rsp+32], al
@@ -1632,82 +1280,78 @@ $LN13@SDL_main:
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	SDL_SetRenderDrawColor
 
-; 300  :                                background_color.r,
-; 301  :                                background_color.g,
-; 302  :                                background_color.b,
-; 303  :                                background_color.a);
-; 304  :         SDL_RenderClear(renderer);
+; 205  :                                background_color.r,
+; 206  :                                background_color.g,
+; 207  :                                background_color.b,
+; 208  :                                background_color.a);
+; 209  :         SDL_RenderClear(renderer);
 
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	SDL_RenderClear
 
-; 305  : 
-; 306  :         grass_field_draw(renderer,
+; 210  : 
+; 211  :         grass_field_draw(renderer,
 
-	mov	r9, QWORD PTR grid_layer$[rbp+4]
-	lea	r8, QWORD PTR grass_pool$[rbp]
-	mov	rdx, QWORD PTR texture$[rbp]
+	lea	rdx, QWORD PTR grass_pool$[rbp]
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	grass_field_draw
 
-; 307  :                         texture,
-; 308  :                         &grass_pool,
-; 309  :                         grid_layer.dimensions);
-; 310  : 
-; 311  :         grid_draw(renderer, &grid_layer);
+; 212  :                          &grass_pool);
+; 213  :         sheep_flock_draw(renderer,
+
+	lea	rdx, QWORD PTR sheep_pool$[rbp]
+	mov	rcx, QWORD PTR renderer$[rbp]
+	call	sheep_flock_draw
+
+; 214  :                          &sheep_pool);
+; 215  : 
+; 216  :         grid_draw(renderer, &grid_layer);
 
 	lea	rdx, QWORD PTR grid_layer$[rbp]
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	grid_draw
 
-; 312  : 
-; 313  :         animation_animate(&anim);
-
-	lea	rcx, QWORD PTR anim$[rbp]
-	call	animation_animate
-
-; 314  :         animation_draw(renderer, &anim, &destination);
-
-	lea	r8, QWORD PTR destination$[rbp]
-	lea	rdx, QWORD PTR anim$[rbp]
-	mov	rcx, QWORD PTR renderer$[rbp]
-	call	animation_draw
-
-; 315  : 
-; 316  :         SDL_RenderPresent(renderer);
+; 217  : 
+; 218  :         SDL_RenderPresent(renderer);
 
 	mov	rcx, QWORD PTR renderer$[rbp]
 	call	SDL_RenderPresent
 
-; 317  :         // !Render
-; 318  :     }
+; 219  :         // !Render
+; 220  : 
+; 221  :         SDL_Delay(16);
 
-	jmp	$LN2@SDL_main
-$LN3@SDL_main:
+	mov	ecx, 16
+	call	SDL_Delay
 
-; 319  : 
-; 320  :     grass_field_clean(&grass_pool);
+; 222  :     }
+
+	jmp	$LN5@SDL_main
+$LN6@SDL_main:
+
+; 223  : 
+; 224  :     grass_field_clean(&grass_pool);
 
 	lea	rcx, QWORD PTR grass_pool$[rbp]
 	call	grass_field_clean
 
-; 321  :     grid_free_nodes(&grid_layer);
+; 225  :     grid_free_nodes(&grid_layer);
 
 	lea	rcx, QWORD PTR grid_layer$[rbp]
 	call	grid_free_nodes
 
-; 322  : 
-; 323  :     SDL_Quit();
+; 226  : 
+; 227  :     SDL_Quit();
 
 	call	SDL_Quit
 
-; 324  : 
-; 325  :     return 0;
+; 228  : 
+; 229  :     return 0;
 
 	xor	eax, eax
 $LN1@SDL_main:
 
-; 326  : }
+; 230  : }
 
 	mov	rdi, rax
 	lea	rcx, QWORD PTR [rbp-64]
@@ -1717,7 +1361,7 @@ $LN1@SDL_main:
 	mov	rcx, QWORD PTR __$ArrayPad$[rbp]
 	xor	rcx, rbp
 	call	__security_check_cookie
-	lea	rsp, QWORD PTR [rbp+1712]
+	lea	rsp, QWORD PTR [rbp+2368]
 	pop	rdi
 	pop	rsi
 	pop	rbp

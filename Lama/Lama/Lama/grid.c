@@ -60,6 +60,30 @@ bool grid_set_data_at(grid* p_grid, vector2 p_index, const unsigned int bitmask_
     temp->data |= (bitmask_index & p_value);
     return true;
 }
+vector2 grid_world_to_grid(grid* p_grid, vector2 p_world_pos)
+{
+    vector2 to_return;
+    to_return.x = (int)(p_world_pos.x / p_grid->cell_size);
+    to_return.y = (int)(p_world_pos.y / p_grid->cell_size);
+    return to_return;
+}
+vector2 grid_grid_to_world(grid* p_grid, vector2 p_grid_pos, node_origin p_world_origin)
+{
+    vector2 to_return;
+    vector2 offset; 
+    offset.x = ((p_world_origin & ORIGIN_LEFT) * (int)(p_grid->cell_size * 0.5f)) -
+               ((p_world_origin & ORIGIN_RIGHT) * (int)(p_grid->cell_size * 0.5f));
+    offset.y = ((p_world_origin & ORIGIN_BOTTOM) * (int)(p_grid->cell_size * 0.5f)) -
+               ((p_world_origin & ORIGIN_TOP) * (int)(p_grid->cell_size * 0.5f));
+
+    to_return.x = (int)(p_grid_pos.x * p_grid->cell_size) + (int)(p_grid->cell_size * 0.5f);
+    to_return.y = (int)(p_grid_pos.y * p_grid->cell_size) + (int)(p_grid->cell_size * 0.5f);
+
+    to_return.x += offset.x;
+    to_return.y += offset.y;
+
+    return to_return;
+}
 int grid_check_node_data(grid* p_grid, vector2 p_index, int bitmask_index)
 {
     return (p_grid->nodes[p_index.y * p_grid->dimensions.x + p_index.x].data & bitmask_index);
@@ -130,6 +154,21 @@ void grid_draw(SDL_Renderer* p_renderer, grid* p_grid)
                                        0,
                                        125,
                                        0,
+                                       255);
+                SDL_RenderFillRect(p_renderer, &rect2);
+            }
+            if(grid_check_node_data(p_grid, index, HAS_SHEEP))
+            {
+                // To show data and sprites of objects at the same time
+                SDL_Rect rect2 = rect;
+                rect2.x += 32;
+                rect2.w *= 0.25f;
+                rect2.h *= 0.25f;
+
+                SDL_SetRenderDrawColor(p_renderer,
+                                       0,
+                                       125,
+                                       255,
                                        255);
                 SDL_RenderFillRect(p_renderer, &rect2);
             }

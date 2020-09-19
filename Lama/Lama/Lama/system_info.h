@@ -4,6 +4,8 @@
 
 #include "vector2.h"
 
+#define FRAME_TIME 16
+
 struct SDL_Renderer;
 struct grid;
 

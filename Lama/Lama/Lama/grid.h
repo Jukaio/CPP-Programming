@@ -12,6 +12,15 @@
 typedef unsigned long Uint32;
 struct SDL_Renderer;
 
+typedef enum node_origin
+{
+    ORIGIN_CENTER   = 0,
+    ORIGIN_TOP      = 1 << 0,
+    ORIGIN_RIGHT    = 1 << 1,
+    ORIGIN_BOTTOM   = 1 << 2,
+    ORIGIN_LEFT     = 1 << 3,
+} node_origin;
+
 enum node_data
 {
     UNKNOWN         = 0,          // 0000 0000
@@ -44,6 +53,11 @@ bool grid_set_data_at(grid* p_grid,
                       vector2 p_index, 
                       const unsigned int bitmask_index, 
                       const unsigned int p_value);
+vector2 grid_world_to_grid(grid* p_grid, 
+                           vector2 p_world_pos);
+vector2 grid_grid_to_world(grid* p_grid, 
+                           vector2 p_grid_pos,
+                           node_origin p_world_origin);
 bool grid_open_neighbours_at(grid* p_grid, 
                              vector2* out_open_neighbours, 
                              int* out_open_count, 

@@ -30,6 +30,12 @@
     <ClInclude Include="grass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sheep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -39,6 +45,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="grass.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="animation.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sheep.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vector2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
