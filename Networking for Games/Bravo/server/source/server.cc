@@ -30,6 +30,7 @@ NetworkServer::Connection::Connection()
     : m_state(State::DISCONNECTED)
     , m_key(0)
     , m_challenge(0)
+    , m_ack(0)
 {
 }
 
@@ -54,6 +55,7 @@ bool NetworkServer::Connection::is_disconnecting() const
 }
 
 NetworkServer::NetworkServer()
+    : m_sequence(0)
 {
 }
 
@@ -76,43 +78,6 @@ void NetworkServer::update()
     receive();
     send();
 
-    //Time now = Time::now();
-    //auto it = m_pending_connections.begin();
-    //while(it != m_pending_connections.end())
-    //{
-    //    if((*it).is_disconnected())
-    //    {
-    //        it = m_pending_connections.erase(it);
-    //        return;
-    //    }
-    //    else if((*it).is_connected())
-    //    {
-    //        // ERASE FROM PENDING
-    //        // ADD TO ESTABLISHED
-    //    }
-    //    else if(now - (*it).m_last_receive_time >= Time(0.2))
-    //    {
-    //        // ERASE FROM PENDING
-    //    }
-    //    else
-    //        it++;
-    //}
-
-    //it = m_established_connections.begin();
-    //while(it != m_established_connections.end())
-    //{
-    //    if((*it).is_disconnected())
-    //    {
-    //        it = m_established_connections.erase(it);
-    //        return;
-    //    }
-    //    else if(now - (*it).m_last_receive_time >= Time(0.2))
-    //    {
-    //        // ERASE FROM ESTABLISHED
-    //    }
-    //    else
-    //        it++;
-    //}
 }
 
 void NetworkServer::send()
@@ -141,7 +106,9 @@ void NetworkServer::send()
         {
             if((current_time - connection.m_last_send_time) >= Time(0.2))
             {
-                ProtocolDataPacket packet(0, 0, (uint32) current_time.as_ticks());
+                const Time delta_time = current_time - connection.m_last_send_time;
+                const uint32 process_time = (uint32)delta_time.as_ticks();
+                ProtocolDataPacket packet(m_sequence++, connection.m_ack, process_time);
                 send_packet(connection.m_address, packet);
                 connection.m_last_send_time = current_time;
             }
@@ -179,6 +146,10 @@ void NetworkServer::receive()
             }   break;
             case PROTOCOL_PACKET_DATA:
             {
+                ProtocolDataPacket packet;
+                if(!packet.read(reader))
+                    assert(!"FAILED TO READ PACKET");
+                process(address, packet);
             }   break;
             case PROTOCOL_PACKET_DISCONNECT:
             {
@@ -255,6 +226,19 @@ void NetworkServer::process(const IPAddress& p_address,
 void NetworkServer::process(const IPAddress& p_address,
                             const ProtocolDataPacket& p_packet)
 {
+    auto it = m_established_connections.begin();
+    while(it != m_established_connections.end())
+    {
+        if(p_address == (*it).m_address)
+            if((*it).is_connected())
+            {
+                (*it).m_ack = p_packet.sequence_;
+                printf("SEQ: %d - ACK: %d - TICKS: %d\n", m_sequence, (*it).m_ack, p_packet.ticks_);
+                return;
+            }
+            else
+                it++;
+    }
 }
 
 void NetworkServer::process(const IPAddress& p_address,

@@ -29,6 +29,7 @@ struct NetworkServer
 		State		m_state;
 		uint64		m_key;
 		uint64		m_challenge;
+		uint16		m_ack;
 		Time		m_last_send_time;
 		Time		m_last_receive_time;
 	};
@@ -58,6 +59,8 @@ struct NetworkServer
 	}
 
 	void send_stream(const IPAddress &address, const NetworkStream &stream);
+
+	uint16 m_sequence;
 
 	UDPSocket m_socket;
 	DynamicArray<Connection> m_pending_connections;

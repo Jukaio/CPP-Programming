@@ -30,6 +30,9 @@ NetworkClient::NetworkClient()
     : m_state(State::DISCONNECTED)
     , m_key(0)
     , m_disconnect_counter(0)
+    , m_sequence(0)
+    , m_ack(0)
+    , m_challenge(0)
 {
 }
 
@@ -174,7 +177,7 @@ void NetworkClient::send()
             {
                 const Time delta_time = current_time - m_last_receive_time;
                 const uint32 process_time = (uint32)delta_time.as_ticks();
-                ProtocolDataPacket packet(m_sequence, 
+                ProtocolDataPacket packet(m_sequence++, 
                                           m_ack, 
                                           process_time);
                 packet.write(writer);
@@ -234,6 +237,7 @@ void NetworkClient::process(const ProtocolDataPacket& p_packet)
     if(m_state == State::CONNECTED)
     {
         m_ack = p_packet.sequence_;
+        printf("SEQ: %d - ACK: %d - TICKS: %d\n", m_sequence, m_ack, p_packet.ticks_);
     }
 }
 

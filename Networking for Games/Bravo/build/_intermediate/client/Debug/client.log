@@ -1,2 +1,4 @@
-﻿  main.cc
-  client.vcxproj -> E:\CPP-Programming\Networking for Games\Bravo\client\..\build\client.debug.exe
+﻿  client.cc
+  main.cc
+  Generating Code...
+  client.vcxproj -> E:\CPP-Programming\Networking for Games\bravo\client\..\build\client.debug.exe
