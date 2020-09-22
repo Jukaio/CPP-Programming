@@ -47,7 +47,7 @@ bool ClientApp::on_tick(const Time &dt)
       {
          //m_latest_server_time += Time::now();
 
-         const float from = buffer_.front().time_.as_seconds();
+         const float from = buffer_[0].time_.as_seconds();
          const float to = buffer_[1].time_.as_seconds();
 
          const float current_difference = Time::now().as_seconds() - to;
@@ -55,12 +55,11 @@ bool ClientApp::on_tick(const Time &dt)
 
          const float time_fraction = current_difference / total_difference;
 
-         entity_.position_ = Vector2::lerp(buffer_.front().position_,
+         entity_.position_ = Vector2::lerp(buffer_[0].position_,
                                            buffer_[1].position_, 
                                            time_fraction);
-
-        printf("x: %f -- y: %f\n", entity_.position_.x_, entity_.position_.y_);
-         //printf("serverticks: %f -- difference: %f -- current diff: %f\n", m_latest_server_time.as_seconds(), total_difference, current_difference);
+        //printf("%d\n", (int) buffer_.size());
+         printf("x: %f -- y: %f -- current diff: %f\n", entity_.position_.x_, entity_.position_.y_, current_difference);
          if(cmpv2(entity_.position_, buffer_[1].position_))
             buffer_.erase(buffer_.begin());
       }
