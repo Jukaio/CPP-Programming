@@ -7,7 +7,8 @@
 ClientApp::ClientApp()
    : mouse_(window_.mouse_)
    , keyboard_(window_.keyboard_)
-   , m_latest_server_time(0.0)
+	, m_interpolator(Time(0.1))
+	, ticks_(0)
 {
 }
 
@@ -18,19 +19,13 @@ bool ClientApp::on_init()
    }
 
    connection_.set_listener(this);
-   connection_.connect(network::IPAddress(9, 0, 0, 1, 54345));
+   connection_.connect(network::IPAddress(192, 168, 1, 2, 54322));
 
    return true;
 }
 
 void ClientApp::on_exit()
 {
-}
-
-
-bool cmpv2(Vector2 A, Vector2 B, float epsilon = 0.005f)
-{
-    return Vector2::distance(A, B) == 0;
 }
 
 bool ClientApp::on_tick(const Time &dt)
@@ -41,30 +36,26 @@ bool ClientApp::on_tick(const Time &dt)
 
    accumulator_ += dt;
    if (accumulator_ >= Time(1.0 / 60.0)) {
-      accumulator_ -= Time(1.0 / 60.0);
+	   accumulator_ -= Time(1.0 / 60.0);
+	   
+	   ticks_++;
 
-      if(buffer_.size() > 1)
-      {
-         //m_latest_server_time += Time::now();
+	   //uint32 current = m_interpolator.m_buffer.m_buffer.front().m_tick;
+	   const Time difference = m_time_states.current().m_server.now - m_time_states.current().m_client.now;
+	   EntityState state = m_interpolator.step(Time::now() + difference);
+	   entity_.position_ = state.m_position;
+	   //printf("Tick: %d -- Index: %d --pos x: %f -- pos y: %f \n", state.m_tick, m_interpolator.m_index, state.m_position.x_, state.m_position.y_);
+	   
+	   printf("Time: %f -- Other: %f \n", (Time::now() + difference).as_seconds(), m_time_states.current().m_server.now.as_seconds());
+	   
+	   //printf("Interpol count: %d \n", (int)m_interpolator.m_buffer.m_buffer.size());
+	   //printf("Server: Time: %f -- dt: %f -- Ticks: %u  --- ", m_time_states.current().m_server.now.as_seconds(),
+				//											   m_time_states.current().m_server.dt.as_seconds(),
+				//											   (int)m_time_states.current().m_server.ticks);
 
-         const float from = buffer_[0].time_.as_seconds();
-         const float to = buffer_[1].time_.as_seconds();
-
-         const float current_difference = Time::now().as_seconds() - to;
-         const float total_difference = to - from;
-
-         const float time_fraction = current_difference / total_difference;
-
-         entity_.position_ = Vector2::lerp(buffer_[0].position_,
-                                           buffer_[1].position_, 
-                                           time_fraction);
-        //printf("%d\n", (int) buffer_.size());
-         printf("x: %f -- y: %f -- current diff: %f\n", entity_.position_.x_, entity_.position_.y_, current_difference);
-         if(cmpv2(entity_.position_, buffer_[1].position_))
-            buffer_.erase(buffer_.begin());
-      }
-
-      // note: entity interpolation goes here
+	   //printf("Client: Time: %f -- dt: %f -- Ticks: %u \n ",  m_time_states.current().m_client.now.as_seconds(),
+				//											   m_time_states.current().m_client.dt.as_seconds(),
+				//											   (int)m_time_states.current().m_client.ticks);
    }
 
    return true;
@@ -84,13 +75,20 @@ void ClientApp::on_acknowledge(network::Connection *connection,
 void ClientApp::on_receive(network::Connection *connection, 
                            network::NetworkStreamReader &reader)
 {
+	EntityState state;
    {
       network::NetworkMessageServerTick message;
       if (!message.read(reader)) {
          assert(!"could not read message!");
       }
 
-      m_latest_server_time = Time(message.server_time_);
+	  TimeState temp;
+	  temp.m_server = { Time(message.server_time_), Time(message.server_dt_) , message.server_tick_ };
+	  temp.m_client = { Time::now(), Time::deltatime(), ticks_ };
+	  m_time_states.push(temp);
+
+	  state.m_tick = message.server_tick_;
+	  state.m_time = message.server_time_;
    }
 
    {
@@ -98,10 +96,9 @@ void ClientApp::on_receive(network::Connection *connection,
       if (!message.read(reader)) {
          assert(!"could not read message!");
       }
-      
-      buffer_.push_back({m_latest_server_time, message.position_});
-   
+	  state.m_position = message.position_;
    }
+   m_interpolator.push(state);
 
    //printf("NFO: %llu %u\n", 
    //       message.server_time_, 
@@ -112,4 +109,12 @@ void ClientApp::on_send(network::Connection *connection,
                         const uint16 sequence, 
                         network::NetworkStreamWriter &writer)
 {
+	{
+		network::NetworkMessageClientTick message(Time::now().as_ticks(),
+												  ticks_,
+												  Time::deltatime().as_ticks());
+		if (!message.write(writer)) {
+			assert(!"failed to write message!");
+		}
+	}
 }

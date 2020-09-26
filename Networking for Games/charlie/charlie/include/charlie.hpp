@@ -47,6 +47,27 @@ namespace charlie {
       float a_;
    };
 
+   template <typename T>
+   struct Buffer
+   {
+	   constexpr static size_t BUFFER_SIZE = 64;
+
+	   void push(const T& p_item)
+	   {
+		   m_buffer[m_index] = p_item;
+		   m_index = (m_index + 1) % BUFFER_SIZE;
+	   }
+
+	   T& current()
+	   {
+		   return m_buffer[(m_index - 1) % BUFFER_SIZE];
+	   }
+
+	   size_t m_index{ 0 };
+	   T m_buffer[BUFFER_SIZE];
+   };
+
+
    struct Point {
       Point();
       Point(const int32 x, const int32 y);
@@ -174,6 +195,20 @@ namespace charlie {
 
       int64 ticks_;
    };
+
+   struct TimeInfo
+   {
+	   Time now{ 0.0 };
+	   Time dt{ 0.0 };
+	   uint64 ticks{ 0 };
+   };
+
+   struct TimeState
+   {
+	   TimeInfo m_client;
+	   TimeInfo m_server;
+   };
+
 
    struct FileContent {
       FileContent();

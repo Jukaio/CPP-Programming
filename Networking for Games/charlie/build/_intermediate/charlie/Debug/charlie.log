@@ -1,9 +1,8 @@
 ﻿  charlie_application.cc
   charlie_gameplay.cc
   charlie_messages.cc
-  charlie_system.cc
   charlie_network.cc
   charlie_protocol.cc
-  winmain.cc
+  charlie_system.cc
   Generating Code...
-  charlie.vcxproj -> E:\CPP-Programming\Networking for Games\charlie\charlie\..\build\charlie.debug.lib
+  charlie.vcxproj -> C:\Users\rutas\Desktop\charlie\charlie\..\build\charlie.debug.lib
