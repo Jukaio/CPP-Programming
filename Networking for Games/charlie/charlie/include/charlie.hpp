@@ -47,26 +47,101 @@ namespace charlie {
       float a_;
    };
 
-   template <typename T>
-   struct Buffer
+   template <typename T, const int buffer_size>
+   struct RingBuffer
    {
-	   constexpr static size_t BUFFER_SIZE = 64;
-
 	   void push(const T& p_item)
 	   {
 		   m_buffer[m_index] = p_item;
-		   m_index = (m_index + 1) % BUFFER_SIZE;
+		   m_index = (m_index + 1) % buffer_size;
 	   }
 
 	   T& current()
 	   {
-		   return m_buffer[(m_index - 1) % BUFFER_SIZE];
+		   return m_buffer[(m_index - 1) % buffer_size];
 	   }
 
-	   size_t m_index{ 0 };
-	   T m_buffer[BUFFER_SIZE];
-   };
+	   T& previous(const uint32 offset = 0)
+	   {
+		   return m_buffer[(m_index - 2 - offset) % buffer_size];
+	   }
 
+	private:
+	   size_t m_index{ 0 };
+	   T m_buffer[buffer_size];
+   };
+   //template <typename T>
+   //struct Buffer32
+   //{
+	  // constexpr static size_t BUFFER_SIZE = 64;
+
+	  // void push(const T& p_item)
+	  // {
+		 //  m_buffer[m_index] = p_item;
+		 //  m_index = (m_index + 1) % BUFFER_SIZE;
+	  // }
+
+	  // T & current()
+	  // {
+		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
+	  // }
+
+	  // T& previous()
+	  // {
+		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
+	  // }
+
+	  // size_t m_index{ 0 };
+	  // T m_buffer[BUFFER_SIZE];
+   //};
+   //template <typename T>
+   //struct Buffer64
+   //{
+	  // constexpr static size_t BUFFER_SIZE = 64;
+
+	  // void push(const T& p_item)
+	  // {
+		 //  m_buffer[m_index] = p_item;
+		 //  m_index = (m_index + 1) % BUFFER_SIZE;
+	  // }
+
+	  // T& current()
+	  // {
+		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
+	  // }
+
+	  // T& previous()
+	  // {
+		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
+	  // }
+
+	  // size_t m_index{ 0 };
+	  // T m_buffer[BUFFER_SIZE];
+   //};
+   //template <typename T>
+   //struct Buffer128
+   //{
+	  // constexpr static size_t BUFFER_SIZE = 128;
+
+	  // void push(const T& p_item)
+	  // {
+		 //  m_buffer[m_index] = p_item;
+		 //  m_index = (m_index + 1) % BUFFER_SIZE;
+	  // }
+
+	  // T & current()
+	  // {
+		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
+	  // }
+
+	  // T& previous()
+	  // {
+		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
+	  // }
+
+	  // size_t m_index{ 0 };
+	  // T m_buffer[BUFFER_SIZE];
+   //};
 
    struct Point {
       Point();
@@ -199,7 +274,6 @@ namespace charlie {
    struct TimeInfo
    {
 	   Time now{ 0.0 };
-	   Time dt{ 0.0 };
 	   uint64 ticks{ 0 };
    };
 

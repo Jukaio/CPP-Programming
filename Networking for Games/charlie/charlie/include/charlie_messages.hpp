@@ -14,6 +14,8 @@ namespace charlie {
          NETWORK_MESSAGE_SERVER_TICK,
 		 NETWORK_MESSAGE_CLIENT_TICK,
          NETWORK_MESSAGE_ENTITY_STATE,
+		 NETWORK_MESSAGE_INPUT_COMMAND,
+		 NETWORK_MESSAGE_PLAYER_STATE,
          NETWORK_MESSAGE_COUNT,
       };
 
@@ -23,8 +25,7 @@ namespace charlie {
 	  struct NetworkMessageClientTick {
 		  NetworkMessageClientTick();
 		  explicit NetworkMessageClientTick(const int64  client_time,
-											const uint32 client_tick,
-											const int64	client_dt);
+											const uint32 client_tick);
 
 		  bool read(NetworkStreamReader& reader);
 		  bool write(NetworkStreamWriter& writer);
@@ -36,21 +37,18 @@ namespace charlie {
 			  result &= stream.serialize(type_);
 			  result &= stream.serialize(client_time_);
 			  result &= stream.serialize(client_tick_);
-			  result &= stream.serialize(client_dt_);
 			  return result;
 		  }
 
 		  uint8 type_;
 		  int64 client_time_;
 		  uint32 client_tick_;
-		  int64 client_dt_;
 	  };
 
       struct NetworkMessageServerTick {
          NetworkMessageServerTick();
          explicit NetworkMessageServerTick(const int64  server_time,
-                                           const uint32 server_tick,
-										   const int64	server_dt);
+                                           const uint32 server_tick);
 
          bool read(NetworkStreamReader &reader);
          bool write(NetworkStreamWriter &writer);
@@ -62,14 +60,12 @@ namespace charlie {
             result &= stream.serialize(type_);
             result &= stream.serialize(server_time_);
             result &= stream.serialize(server_tick_);
-			result &= stream.serialize(server_dt_);
             return result;
          }
 
          uint8 type_;
          int64 server_time_;
          uint32 server_tick_;
-		 int64 server_dt_;
       };
 
       struct NetworkMessageEntityState {
@@ -92,6 +88,47 @@ namespace charlie {
          uint8 type_;
          Vector2 position_;
       };
+
+	  struct NetworkMessageInputCommand {
+		  NetworkMessageInputCommand();
+		  explicit NetworkMessageInputCommand(const uint8& bits);
+
+		  bool read(NetworkStreamReader& reader);
+		  bool write(NetworkStreamWriter& writer);
+
+		  template <typename Stream>
+		  bool serialize(Stream& stream)
+		  {
+			  bool result = true;
+			  result &= stream.serialize(type_);
+			  result &= stream.serialize(bits_);
+			  return result;
+		  }
+
+		  uint8 type_;
+		  uint8 bits_;
+	  };
+
+	  struct NetworkMessagePlayerState {
+		  NetworkMessagePlayerState();
+		  explicit NetworkMessagePlayerState(const Vector2& position);
+
+		  bool read(NetworkStreamReader& reader);
+		  bool write(NetworkStreamWriter& writer);
+
+		  template <typename Stream>
+		  bool serialize(Stream& stream)
+		  {
+			  bool result = true;
+			  result &= stream.serialize(type_);
+			  result &= stream.serialize(position_.x_);
+			  result &= stream.serialize(position_.y_);
+			  return result;
+		  }
+
+		  uint8 type_;
+		  Vector2 position_;
+	  };
 
    } // !network
 } // !charlie

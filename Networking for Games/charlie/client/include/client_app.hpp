@@ -7,61 +7,42 @@
 
 using namespace charlie;
 
+typedef RingBuffer<TimeState, 64> TimeStatesBuffer;
+
 struct ClientApp final : Application, network::IConnectionListener {
    ClientApp();
 
-   constexpr static size_t SERVER_TIME_STATE = 32;
+   const static Time TICK_RATE;
 
    struct EntityState {
 	   EntityState()
 		   : m_tick(0)
-		   , m_time(0.0)
 		   , m_position(0.0f, 0.0f)
 	   {
 
 	   }
 	   uint32 m_tick;		// order and identificator
-	   Time m_time;			// if m dt == 1 -> drop this state
-	   Vector2 m_position; // the position
+	   Vector2 m_position;  // the position
    };
-   struct StateBuffer
+
+   struct InputinatorState
    {
-	   void add(const EntityState& p_state)
+	   InputinatorState()
+		   : m_input(0)
+		   , m_tick(0)
+		   , m_position(0, 0)
 	   {
-		   m_buffer.push_back(p_state);
+
 	   }
 
-	   EntityState pop_front()
-	   {
-		   EntityState to_return = m_buffer.front();
-		   m_buffer.erase(m_buffer.begin());
-		   return to_return;
-	   }
-
-	   void remove(EntityState p_state)
-	   {
-		   auto it = m_buffer.begin();
-		   while (it != m_buffer.end())
-		   {
-			   if ((*it).m_tick == p_state.m_tick)
-			   {
-				   m_buffer.erase(it);
-			   }
-		   }
-	   }
-
-	   DynamicArray<EntityState> m_buffer;
+	   uint8 m_input;
+	   Vector2 m_position;
+	   uint32 m_tick;
    };
 
    struct Interpolator
    {
-	   Interpolator(Time p_lag)
-		   : m_index(0)
-		   , m_current(0)
-		   , m_next(1)
-		   , m_prev_index(BUFFER_SIZE - 1)
-		   , m_last_client_step(Time::now())
-		   , m_client_lag(p_lag)
+	   Interpolator()
 	   {
 
 	   }
@@ -71,103 +52,78 @@ struct ClientApp final : Application, network::IConnectionListener {
 		   EntityState state;
 		   state.m_position = p_state.m_position;
 		   state.m_tick = p_state.m_tick;
-		   state.m_time = p_state.m_time;
 
-		   EntityState previous = m_buffer[m_prev_index];
-		   m_buffer[m_index] = state;
-
-		   m_prev_index = m_index;
-		   m_index = (m_index + 1) % BUFFER_SIZE;
+		   m_buffer.push(state);
 	   }
 
-	   EntityState step(Time p_client_now)
+	   EntityState step(uint32 p_sync_tick)
 	   {
-		   const Time difference = m_last_client_step - p_client_now;
-		   const Time client_current = p_client_now - m_client_lag;
+		   // Go back in time though
+		   const EntityState& from = m_buffer.previous();
+		   const EntityState& to = m_buffer.current();
 
-		   if (client_current < Time(0.0))
-			   return m_buffer[0];
-
-		   EntityState prev = m_buffer[BUFFER_SIZE - 1];
-		   EntityState current;
-		   for (int i = 0; i < BUFFER_SIZE; i++)
-		   {
-			   current = m_buffer[i];
-			   if (client_current >= prev.m_time &&
-				   client_current < current.m_time)
-				   break;
-			   prev = current;
-		   }
-
-		   const EntityState& from = prev;
-		   const EntityState& to = current;
-
-		   const Time interpolation_full = to.m_time - from.m_time;
-		   const Time current_time_point = client_current - from.m_time;
-		   const float t = current_time_point.as_seconds() / interpolation_full.as_seconds();
-		   if (t == INFINITY)
-			   printf("ERROR\n"); // TODO: Check timers, something is off with them
-		   printf("t: %f --", t);
+		   const auto interpolation_full_time = int64(to.m_tick) - int64(from.m_tick);
+		   const auto current_interpolation_time_point = int64(p_sync_tick) - int64(from.m_tick);
+		   const float t = float(current_interpolation_time_point) / float(interpolation_full_time);
+		   
 		   EntityState to_return;
 		   to_return.m_tick = from.m_tick;
-		   to_return.m_time = to.m_time;
 		   to_return.m_position = Vector2::lerp(from.m_position, to.m_position, t);
-
-		   m_last_client_step = p_client_now;
 
 		   return to_return;
 	   }
 
-	   int m_current;
-	   int m_next;
-	   int m_index;
-	   int m_prev_index;
-
-	   Time m_last_client_step;
-	   Time m_client_lag;
-
-	   constexpr static int BUFFER_SIZE = 128;
-	   EntityState m_buffer[BUFFER_SIZE];
+	   RingBuffer<EntityState, 16> m_buffer;
    };
-   struct TickInterpolator
+
+   struct Inputinator
    {
-	   void push(const EntityState& p_state)
+	   Inputinator()
 	   {
-		   if (!m_buffer.m_buffer.empty())
-		   {
-			   EntityState previous = m_buffer.m_buffer.back();
-			   const int range_count = (p_state.m_tick - 1) - (previous.m_tick + 1);
-			   const float step = 1.0f / range_count;
-			   float t = 0;
-			   for (uint32 i = (previous.m_tick + 1); i < p_state.m_tick; i++)
-			   {
-				   t = t + step;
 
-				   EntityState temp;
-				   temp.m_tick = i;
-				   temp.m_time = p_state.m_time;
-				   temp.m_position = Vector2::lerp(previous.m_position, p_state.m_position, t);
-				   m_buffer.add(temp);
-			   }
-		   }
-		   m_buffer.add(p_state);
 	   }
 
-	   bool empty()
+	   void push(const InputinatorState& p_state)
 	   {
-		   return m_buffer.m_buffer.empty();
+		   m_buffer.push(p_state);
 	   }
 
-	   EntityState step(int p_back_in_time)
-	   {
-		   if (m_buffer.m_buffer.size() > p_back_in_time)
-			   return m_buffer.pop_front();
-		   return m_buffer.m_buffer.front();
-	   }
-
-	   StateBuffer m_buffer;
+	   RingBuffer<InputinatorState, 16> m_buffer;
    };
+  
 
+   struct EntityClient
+   {
+	   EntityClient() : m_context() {}
+	   void set_context(gameplay::Entity* p_context)
+	   {
+		   m_context = p_context;
+	   }
+
+	   void update(uint32 ticks)
+	   {
+		   const EntityState state = m_interpolator.step(ticks);
+		   m_context->transform_.set_position(state.m_position);
+	   }
+
+	   void render(Renderer p_renderer)
+	   {
+		   
+		   p_renderer.render_rectangle_fill(  { int32(m_context->transform_.position_.x_), 
+										        int32(m_context->transform_.position_.y_),
+											    20, 
+											    20 }, 
+											  Color::Green);
+	   }
+
+	   void push_entity_state(EntityState& p_state)
+	   {
+		   m_interpolator.push(p_state);
+	   }
+
+	   Interpolator m_interpolator;
+	   gameplay::Entity* m_context;
+   };
 
    // note: Application
    virtual bool on_init();
@@ -185,12 +141,16 @@ struct ClientApp final : Application, network::IConnectionListener {
    network::Connection connection_;
 
    uint32 ticks_;
+   int64 m_synced_ticks;
    Time accumulator_;
 
-   gameplay::Entity entity_;
-   Interpolator m_interpolator;
+   gameplay::Entity m_context;
+   EntityClient m_entity;
 
-   Buffer<TimeState> m_time_states;
+   TimeStatesBuffer m_time_states;
+
+   gameplay::Player m_player;
+   RingBuffer<uint8, 16> m_inputs;
 };
 
 #endif // !CLIENT_APP_HPP_INCLUDED

@@ -9,17 +9,14 @@ namespace charlie {
          : type_(NETWORK_MESSAGE_SERVER_TICK)
          , server_time_(0)
          , server_tick_(0)
-		 , server_dt_(0)
       {
       }
 
       NetworkMessageServerTick::NetworkMessageServerTick(const int64  server_time,
-                                                         const uint32 server_tick,
-														 const int64	server_dt)
+                                                         const uint32 server_tick)
          : type_(NETWORK_MESSAGE_SERVER_TICK)
          , server_time_(server_time)
          , server_tick_(server_tick)
-		 , server_dt_(server_dt)
       {
       }
 
@@ -58,14 +55,12 @@ namespace charlie {
 		  : type_(NETWORK_MESSAGE_CLIENT_TICK)
 		  , client_time_(0)
 		  , client_tick_(0)
-		  , client_dt_(0)
 	  {
 	  }
-	  NetworkMessageClientTick::NetworkMessageClientTick(const int64 client_time, const uint32 client_tick, const int64 client_dt)
+	  NetworkMessageClientTick::NetworkMessageClientTick(const int64 client_time, const uint32 client_tick)
 		  : type_(NETWORK_MESSAGE_CLIENT_TICK)
 		  , client_time_(client_time)
 		  , client_tick_(client_tick)
-		  , client_dt_(client_dt)
 	  {
 	  }
 	  bool NetworkMessageClientTick::read(NetworkStreamReader& reader)
@@ -73,6 +68,43 @@ namespace charlie {
 		  return serialize(reader);
 	  }
 	  bool NetworkMessageClientTick::write(NetworkStreamWriter& writer)
+	  {
+		  return serialize(writer);
+	  }
+	  NetworkMessageInputCommand::NetworkMessageInputCommand()
+		  : type_(NETWORK_MESSAGE_INPUT_COMMAND)
+		  , bits_(0)
+	  {
+	  }
+	  NetworkMessageInputCommand::NetworkMessageInputCommand(const uint8& bits)
+		  : type_(NETWORK_MESSAGE_INPUT_COMMAND)
+		  , bits_(bits)
+	  {
+	  }
+	  bool NetworkMessageInputCommand::read(NetworkStreamReader& reader)
+	  {
+		  return serialize(reader);
+	  }
+	  bool NetworkMessageInputCommand::write(NetworkStreamWriter& writer)
+	  {
+		  return serialize(writer);
+	  }
+	  NetworkMessagePlayerState::NetworkMessagePlayerState()
+		  : type_(NETWORK_MESSAGE_PLAYER_STATE)
+
+	  {
+	  }
+	  NetworkMessagePlayerState::NetworkMessagePlayerState(const Vector2& position)
+		  : type_(NETWORK_MESSAGE_PLAYER_STATE)
+		  , position_(position)
+
+	  {
+	  }
+	  bool NetworkMessagePlayerState::read(NetworkStreamReader& reader)
+	  {
+		  return serialize(reader);
+	  }
+	  bool NetworkMessagePlayerState::write(NetworkStreamWriter& writer)
 	  {
 		  return serialize(writer);
 	  }

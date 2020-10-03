@@ -6,14 +6,13 @@
 #include <charlie_application.hpp>
 
 using namespace charlie;
-
 struct ClientList
 {
 	struct Client
 	{
 		int32 m_id{ -1 };
 		uint64 m_connection{0};
-		Buffer<TimeState> m_time_state;
+		RingBuffer<TimeState, 64> m_time_state;
 	};
 
 	ClientList()
@@ -58,6 +57,8 @@ struct ClientList
 struct ServerApp final : Application, network::IServiceListener, network::IConnectionListener {
    ServerApp();
 
+   const static Time TICK_RATE;
+
    // note: Application
    virtual bool on_init();
    virtual void on_exit();
@@ -79,6 +80,9 @@ struct ServerApp final : Application, network::IServiceListener, network::IConne
 
    ClientList m_client_list;
    gameplay::Entity entity_;
+
+   gameplay::Player m_player;
+   uint8 m_player_input;
 };
 
 #endif // !SERVER_APP_HPP_INCLUDED

@@ -4,12 +4,103 @@
 #define CHARLIE_GAMEPLAY_HPP_INCLUDED
 
 #include <charlie.hpp>
+#include <map>
+#include <typeinfo>
+#include <type_traits>
 
 namespace charlie {
    namespace gameplay {
-      struct Entity {
-         Vector2 position_;
-      };
+
+	   enum class Action
+	   {
+		   UP = 1 << 0,
+		   DOWN = 1 << 1,
+		   RIGHT = 1 << 2,
+		   LEFT = 1 << 3,
+	   };
+
+	   typedef uint16 Entity;
+
+	   template<typename T>
+	   struct Component 
+	   {
+		   Component(T p_data)
+			   : data(p_data)
+		   {
+
+		   }
+		   T data;
+	   };
+
+	   struct EntityManger
+	   {
+		   const static int MAX_ENTITIES = 4000;
+
+		   EntityManger()
+		   {
+			   m_signature.reserve(MAX_ENTITIES);
+		   }
+
+		   Entity create_entity()
+		   {
+			   auto to_return = m_available.back();
+			   m_available.erase(m_available.begin());
+			   m_signature.at(to_return) = 0;
+			   return to_return;
+		   }
+		   void destroy_entity(Entity p_entity)
+		   {
+			   m_available.push_back(p_entity);
+			   m_signature.at(p_entity) = 0;
+		   }
+
+		   void set_signature(Entity p_entity, uint32 p_signature)
+		   {
+			   m_signature.at(p_entity) = p_signature;
+
+		   }
+
+		   DynamicArray<uint32> m_signature;
+		   DynamicArray<Entity> m_available;
+	   };
+
+	   struct ComponentManager
+	   {
+		   template<typename T>
+		   void add_component(Entity p_entity, T component)
+		   {
+			   m_map[p_entity][typeid(T)] = Component<T>(component);
+		   }
+
+		   template<typename T>
+		   T& get_component(Entity p_entity)
+		   {
+			   return m_map[p_entity][typeid(T)];
+		   }
+		   DynamicArray<std::map<std::type_info, Component<std::type_info>>> m_map;
+	   };
+
+	   struct System;
+
+	   struct SystemManager
+	   {
+		   template<typename T>
+		   void add_component(Entity p_entity, System* p_system)
+		   {
+			   m_map[typeid(T)] = p_system;
+		   }
+
+		   template<typename T>
+		   T* get_component()
+		   {
+			   return m_map[typeid(T)];
+		   }
+		   std::map<std::type_info, System*> m_map;
+	   };
+
+
+
+
 
       struct ComponentBase {
          static uint32 next();

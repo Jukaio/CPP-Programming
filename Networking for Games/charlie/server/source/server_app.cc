@@ -4,7 +4,8 @@
 #include <charlie_messages.hpp>
 #include <cstdio>
 #include <cmath>
-
+#include <string>
+const Time ServerApp::TICK_RATE = Time(1.0 / 60.0);
 
 ServerApp::ServerApp()
    : ticks_(0)
@@ -13,7 +14,7 @@ ServerApp::ServerApp()
 
 bool ServerApp::on_init()
 {
-   network_.set_send_rate(Time(1.0 / 2.0));
+   network_.set_send_rate(Time(1.0 / 30.0));
    network_.set_allow_connections(true);
    if (!network_.initialize(network::IPAddress(192, 168, 1, 2, 54322))) {
       return false;
@@ -21,8 +22,8 @@ bool ServerApp::on_init()
 
    network_.add_service_listener(this);
 
-   entity_.position_ = { 300.0f, 200.0f };
-
+   entity_.transform_.position_ = { 300.0f, 200.0f };
+   m_player.transform_.position_ = { 200.0f, 200.0f };
    return true;
 }
 
@@ -33,13 +34,37 @@ void ServerApp::on_exit()
 bool ServerApp::on_tick(const Time &dt)
 {
    accumulator_ += dt;
-   if (accumulator_ >= Time(1.0 / 60.0)) {
-      accumulator_ -= Time(1.0 / 60.0);
+   if (accumulator_ >= TICK_RATE) {
+      accumulator_ -= TICK_RATE;
 
       ticks_++;
 
-      entity_.position_.x_ = 300.0f + std::cosf(Time::now().as_seconds()) * 150.0f;
-	  entity_.position_.y_ = 200.0f + std::sinf(Time::now().as_seconds()) * 80.0f;
+      entity_.transform_.position_.x_ = 300.0f + std::cosf(Time::now().as_seconds()) * 150.0f;
+	  entity_.transform_.position_.y_ = 200.0f + std::sinf(Time::now().as_seconds()) * 80.0f;
+
+	  Vector2 direction = Vector2{ 0, 0 };
+	  if (m_player_input & uint8(gameplay::Action::UP))
+	  {
+		  direction.y_ -= 1.0f;
+	  }
+	  if (m_player_input & uint8(gameplay::Action::DOWN))
+	  {
+		  direction.y_ += 1.0f;
+	  }
+	  if (m_player_input & uint8(gameplay::Action::RIGHT))
+	  {
+		  direction.x_ += 1.0f;
+	  }
+	  if (m_player_input & uint8(gameplay::Action::LEFT))
+	  {
+		  direction.x_ -= 1.0f;
+	  }
+	  printf("%d \n", m_player_input);
+	  const float speed = 100.0f;
+	  {
+		  direction.normalize();
+		  m_player.transform_.position_ += direction * speed * TICK_RATE.as_seconds();
+	  }
 
 
 	  //printf("Tick: %d Pos x: %f \n", tick_, entity_.position_.x_);
@@ -62,15 +87,24 @@ bool ServerApp::on_tick(const Time &dt)
 void ServerApp::on_draw()
 {
    renderer_.render_text({ 2, 2 }, Color::Aqua, 1, "SERVER");
-
+   renderer_.render_text({ 2, 12 }, Color::Aqua, 1, std::to_string(ticks_).c_str());
+  
    renderer_.render_rectangle_fill(
       { 
-         static_cast<int32>(entity_.position_.x_), 
-         static_cast<int32>(entity_.position_.y_), 
+         static_cast<int32>(entity_.transform_.position_.x_), 
+         static_cast<int32>(entity_.transform_.position_.y_), 
          20, 
          20 
       }, 
       Color::Red);
+   renderer_.render_rectangle_fill(
+	   {
+		  static_cast<int32>(m_player.transform_.position_.x_),
+		  static_cast<int32>(m_player.transform_.position_.y_),
+		  20,
+		  20
+	   },
+	   Color::Magenta);
 }
 
 void ServerApp::on_timeout(network::Connection *connection)
@@ -99,16 +133,26 @@ void ServerApp::on_acknowledge(network::Connection *connection,
 void ServerApp::on_receive(network::Connection *connection, 
                            network::NetworkStreamReader &reader)
 {
-	network::NetworkMessageClientTick message;
-	if (!message.read(reader)) {
-		assert(!"could not read message!");
-	}
 	auto client = m_client_list.find_client((uint64)connection);
-	
-	TimeState temp;
-	temp.m_client = { Time(message.client_time_), Time(message.client_dt_) , message.client_tick_ };
-	temp.m_server = { Time::now(), Time::deltatime(), ticks_ };
-	client->m_time_state.push(temp);
+	{
+		network::NetworkMessageClientTick message;
+		if (!message.read(reader)) {
+			assert(!"could not read message!");
+		}
+		TimeState temp;
+		temp.m_client = { Time(message.client_time_), message.client_tick_ };
+		temp.m_server = { Time::now(), ticks_ };
+		client->m_time_state.push(temp);
+	}
+
+	{
+		network::NetworkMessageInputCommand message;
+		if (!message.read(reader)) {
+			assert(!"could not read message!");
+		}
+		m_player_input = message.bits_;
+	}
+
 }
 
 void ServerApp::on_send(network::Connection *connection, 
@@ -117,17 +161,23 @@ void ServerApp::on_send(network::Connection *connection,
 {
    {
       network::NetworkMessageServerTick message(Time::now().as_ticks(),
-                                                ticks_,
-												Time::deltatime().as_ticks());
+                                                ticks_);
       if (!message.write(writer)) {
          assert(!"failed to write message!");
       }
    }
 
    {
-      network::NetworkMessageEntityState message(entity_.position_);
+      network::NetworkMessageEntityState message(entity_.transform_.position_);
       if (!message.write(writer)) {
          assert(!"failed to write message!");
       }
+   }
+
+   {
+	   network::NetworkMessagePlayerState message(m_player.transform_.position_);
+	   if (!message.write(writer)) {
+		   assert(!"failed to write message!");
+	   }
    }
 }
