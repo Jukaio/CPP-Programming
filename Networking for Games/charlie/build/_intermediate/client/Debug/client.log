@@ -1,8 +1,0 @@
-﻿  client_app.cc
-  client_app_find_server.cpp
-  client_app_game.cpp
-  client_app_lobby.cpp
-  client_app_menu.cpp
-  main.cc
-  Generating Code...
-  client.vcxproj -> E:\CPP-Programming\Networking for Games\charlie\client\..\build\client.debug.exe

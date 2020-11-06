@@ -1,7 +1,0 @@
-﻿  main.cc
-  server_app.cc
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 887 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  server.vcxproj -> E:\CPP-Programming\Networking for Games\charlie\server\..\build\server.release.exe

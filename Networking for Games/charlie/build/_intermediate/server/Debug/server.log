@@ -1,6 +1,0 @@
-﻿  main.cc
-  server_app.cc
-  server_app_playing.cpp
-  server_app_waiting.cpp
-  Generating Code...
-  server.vcxproj -> E:\CPP-Programming\Networking for Games\charlie\server\..\build\server.debug.exe
