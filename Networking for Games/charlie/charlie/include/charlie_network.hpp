@@ -4,6 +4,8 @@
 #define CHARLIE_NETWORK_HPP_INCLUDED
 
 #include <charlie.hpp>
+#include <functional>
+#include <string>
 
 namespace charlie {
    namespace network {
@@ -15,6 +17,7 @@ namespace charlie {
       struct IPAddress {
          static constexpr uint32 ANY_HOST = 0;
          static bool local_addresses(DynamicArray<IPAddress> &addresses);
+         static bool get_bitmask(const IPAddress& p_address, IPAddress& out_bitmask);
          static bool dns_lookup(const char *dns, DynamicArray<IPAddress> &addresses);
 
          IPAddress();
@@ -76,6 +79,7 @@ namespace charlie {
          bool serialize(const int32 &value);
          bool serialize(const uint64 &value);
          bool serialize(const int64 &value);
+         bool serialize(const std::string& string);
          bool serialize(const uint64 length, const uint8 *values);
          bool serialize(const uint64 length, const char *values);
 
@@ -101,6 +105,7 @@ namespace charlie {
          bool serialize(int32 &value);
          bool serialize(uint64 &value);
          bool serialize(int64 &value);
+         bool serialize(std::string& string);
          bool serialize(const uint64 length, uint8 *values);
          bool serialize(const uint64 length, char *values);
 
@@ -177,7 +182,7 @@ namespace charlie {
          Time connection_established_time_;
          Time round_trip_time_;
          Time round_trip_buffer_[64];
-         IConnectionListener *listener_;
+         IConnectionListener* listener_;
       };
 
       struct ConnectionPool {
@@ -187,7 +192,7 @@ namespace charlie {
          void resize(const int32 capacity);
 
          Connection *create();
-         void release(Connection *connection);
+         void release(Connection*connection);
 
          int32 capacity_;
          int32 connection_count_;
@@ -199,6 +204,12 @@ namespace charlie {
          virtual void on_timeout(Connection *connection) = 0;
          virtual void on_connect(Connection *connection) = 0;
          virtual void on_disconnect(Connection *connection) = 0;
+      };
+
+      struct IBroadcastListener
+      {
+          virtual ~IBroadcastListener() = default;
+          virtual void on_broadcast(const network::IPAddress& p_address) = 0;
       };
 
       struct Service {
@@ -262,6 +273,58 @@ namespace charlie {
          DynamicArray<Connection *> established_connections_;
          DynamicArray<IServiceListener *> connection_listeners_;
       };
+
+      struct ServerDiscoveryConnection
+      {
+          ServerDiscoveryConnection();
+
+          bool initialize(const IPAddress& address, uint16 p_port);
+          
+          void discover();
+          DynamicArray<IPAddress>& get_addresses();
+          void receive();
+          bool found_server();
+          void send_stream(const IPAddress& address, const NetworkStream& stream);
+          void add_broadcast_listener(IBroadcastListener* listener);
+          void remove_broadcast_listener(IBroadcastListener* listener);
+
+          Time m_send_rate;
+          Time m_last_time_sent;
+          UDPSocket m_socket;
+          DynamicArray<IPAddress> m_discovered_addresses;
+          bool m_initialised = false;
+          uint8 m_counter;
+          uint16 m_port;
+
+          DynamicArray<IBroadcastListener*> m_broadcast_listeners;
+      };
+
+      #define SEND_LAMBDA  [this](network::Connection* connection, const uint16 sequence, network::NetworkStreamWriter& writer)
+      #define RECEIVE_LAMBDA [this](network::Connection* connection, network::NetworkStreamReader& reader)
+
+      typedef std::function<void(network::Connection*,
+                                 const uint16,
+                                 network::NetworkStreamWriter&)> SendFunction;
+
+      typedef std::function<void(network::Connection*,
+                                 network::NetworkStreamReader&)> ReceiveFunction;
+
+      // Kind of strongly coupled to network::messages content
+      // TOTO: Decouple from messages 
+      struct DataTransferFunctions
+      {
+          DataTransferFunctions();
+
+          void send_messages(network::Connection* connection, const uint16 sequence, network::NetworkStreamWriter& writer);
+          void receive_messages(network::Connection* connection, network::NetworkStreamReader& reader);
+
+          void set_send_function(uint16 p_index, SendFunction p_function);
+          void set_receive_function(uint16 p_index, ReceiveFunction p_function);
+
+          std::vector<SendFunction> m_send_functions;
+          std::vector<ReceiveFunction> m_receive_functions;
+      };
+
    } // !network
 } // !charlie
 

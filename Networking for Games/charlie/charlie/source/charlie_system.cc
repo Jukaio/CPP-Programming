@@ -384,11 +384,12 @@ namespace charlie {
    {
    }
 
-   Point::Point(const int32 x, const int32 y)
+   Point::Point(int32 x, int32 y)
       : x_(x)
       , y_(y)
    {
    }
+
 
    Point Point::operator+(const Point &rhs) const
    {
@@ -978,8 +979,8 @@ namespace charlie {
                    NULL,
                    window_x,
                    window_y,
-                   window_width,
-                   window_height,
+                   width,
+                   height,
                    SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED | SWP_SHOWWINDOW);
 
       opengl_projection(width, height);

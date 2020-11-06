@@ -14,7 +14,7 @@ struct after_main_check
 {
     ~after_main_check()
     {
-            _CrtDumpMemoryLeaks();
+        _CrtDumpMemoryLeaks();
     }
 };
 #endif

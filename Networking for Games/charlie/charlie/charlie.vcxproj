@@ -97,12 +97,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\data_transfer_functions.cpp" />
     <ClCompile Include="source\charlie_application.cc" />
     <ClCompile Include="source\charlie_gameplay.cc" />
     <ClCompile Include="source\charlie_messages.cc" />
     <ClCompile Include="source\charlie_system.cc" />
     <ClCompile Include="source\charlie_network.cc" />
     <ClCompile Include="source\charlie_protocol.cc" />
+    <ClCompile Include="source\pugixml.cpp" />
     <ClCompile Include="source\winmain.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +113,9 @@
     <ClInclude Include="include\charlie_gameplay.hpp" />
     <ClInclude Include="include\charlie_messages.hpp" />
     <ClInclude Include="include\charlie_network.hpp" />
+    <ClInclude Include="include\network_information.h" />
+    <ClInclude Include="include\pugiconfig.hpp" />
+    <ClInclude Include="include\pugixml.hpp" />
     <ClInclude Include="source\charlie_protocol.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

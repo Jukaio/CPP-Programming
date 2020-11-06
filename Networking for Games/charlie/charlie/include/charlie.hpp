@@ -17,6 +17,7 @@ namespace charlie {
    typedef   signed short     int16;
    typedef unsigned char      uint8;
    typedef   signed char      int8;
+   
 
    template <typename T>
    using DynamicArray = std::vector<T>;
@@ -47,7 +48,9 @@ namespace charlie {
       float a_;
    };
 
-   template <typename T, const int buffer_size>
+
+
+   template <typename T, const int buffer_size = 64>
    struct RingBuffer
    {
 	   void push(const T& p_item)
@@ -56,96 +59,31 @@ namespace charlie {
 		   m_index = (m_index + 1) % buffer_size;
 	   }
 
+       void push(const T&& p_item)
+       {
+           m_buffer[m_index] = p_item;
+           m_index = (m_index + 1) % buffer_size;
+       }
+
+
 	   T& current()
 	   {
-		   return m_buffer[(m_index - 1) % buffer_size];
+		   return m_buffer[(m_index + buffer_size - 1) % buffer_size];
 	   }
 
 	   T& previous(const uint32 offset = 0)
 	   {
-		   return m_buffer[(m_index - 2 - offset) % buffer_size];
+		   return m_buffer[(m_index + buffer_size - 2 - offset) % buffer_size];
 	   }
 
 	private:
 	   size_t m_index{ 0 };
 	   T m_buffer[buffer_size];
    };
-   //template <typename T>
-   //struct Buffer32
-   //{
-	  // constexpr static size_t BUFFER_SIZE = 64;
-
-	  // void push(const T& p_item)
-	  // {
-		 //  m_buffer[m_index] = p_item;
-		 //  m_index = (m_index + 1) % BUFFER_SIZE;
-	  // }
-
-	  // T & current()
-	  // {
-		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
-	  // }
-
-	  // T& previous()
-	  // {
-		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
-	  // }
-
-	  // size_t m_index{ 0 };
-	  // T m_buffer[BUFFER_SIZE];
-   //};
-   //template <typename T>
-   //struct Buffer64
-   //{
-	  // constexpr static size_t BUFFER_SIZE = 64;
-
-	  // void push(const T& p_item)
-	  // {
-		 //  m_buffer[m_index] = p_item;
-		 //  m_index = (m_index + 1) % BUFFER_SIZE;
-	  // }
-
-	  // T& current()
-	  // {
-		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
-	  // }
-
-	  // T& previous()
-	  // {
-		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
-	  // }
-
-	  // size_t m_index{ 0 };
-	  // T m_buffer[BUFFER_SIZE];
-   //};
-   //template <typename T>
-   //struct Buffer128
-   //{
-	  // constexpr static size_t BUFFER_SIZE = 128;
-
-	  // void push(const T& p_item)
-	  // {
-		 //  m_buffer[m_index] = p_item;
-		 //  m_index = (m_index + 1) % BUFFER_SIZE;
-	  // }
-
-	  // T & current()
-	  // {
-		 //  return m_buffer[(m_index - 1) % BUFFER_SIZE];
-	  // }
-
-	  // T& previous()
-	  // {
-		 //  return m_buffer[(m_index - 2) % BUFFER_SIZE];
-	  // }
-
-	  // size_t m_index{ 0 };
-	  // T m_buffer[BUFFER_SIZE];
-   //};
 
    struct Point {
       Point();
-      Point(const int32 x, const int32 y);
+      Point(int32 x, int32 y);
 
       Point operator+(const Point &rhs) const;
       Point operator-(const Point &rhs) const;
@@ -271,16 +209,10 @@ namespace charlie {
       int64 ticks_;
    };
 
-   struct TimeInfo
-   {
-	   Time now{ 0.0 };
-	   uint64 ticks{ 0 };
-   };
-
    struct TimeState
    {
-	   TimeInfo m_client;
-	   TimeInfo m_server;
+       uint32 m_client;
+       uint32 m_server;
    };
 
 
@@ -317,7 +249,8 @@ namespace charlie {
       } buttons_[int(Button::Count)];
    };
 
-   struct Keyboard {
+   struct Keyboard 
+   {
       enum class Key {
          None,
          Back,
@@ -428,6 +361,12 @@ namespace charlie {
          Oem8,
          Oem102,
          Count
+      };
+      enum class KeyState
+      {
+          Released,
+          Pressed,
+          Down
       };
 
       Keyboard();
@@ -568,6 +507,9 @@ namespace charlie {
       void render_rectangle_fill(const Rectangle &rectangle, const Color &color);
       void render_sprite(const Sprite &sprite, const Material &material, const Transform &transform);
    };
+
+
+
 } // !charlie
 
 #endif // !CHARLIE_HH_INCLUDED

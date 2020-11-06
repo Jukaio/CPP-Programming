@@ -98,6 +98,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\client_app.cc" />
+    <ClCompile Include="source\client_app_find_server.cpp" />
+    <ClCompile Include="source\client_app_game.cpp" />
+    <ClCompile Include="source\client_app_lobby.cpp" />
+    <ClCompile Include="source\client_app_menu.cpp" />
     <ClCompile Include="source\main.cc" />
   </ItemGroup>
   <ItemGroup>

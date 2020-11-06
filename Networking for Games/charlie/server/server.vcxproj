@@ -99,6 +99,8 @@
   <ItemGroup>
     <ClCompile Include="source\main.cc" />
     <ClCompile Include="source\server_app.cc" />
+    <ClCompile Include="source\server_app_playing.cpp" />
+    <ClCompile Include="source\server_app_waiting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\server_app.hpp" />

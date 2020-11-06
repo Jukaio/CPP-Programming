@@ -13,7 +13,7 @@ namespace charlie {
 
    bool Application::init()
    {
-      if (!window_.open(Settings("charlie", 640, 360))) {
+      if (!window_.open(Settings("charlie", WIDTH * SCALE, HEIGHT * SCALE))) {
          return false;
       }
 

@@ -7,8 +7,16 @@
 #include <charlie_network.hpp>
 #include <charlie_gameplay.hpp>
 
+const charlie::Time SERVER_SEND_RATE = 1.0 / 20.0f;
+const charlie::Time CLIENT_SEND_RATE = 1.0 / 60.0f;
+
 namespace charlie {
-   struct Application {
+   struct Application 
+   {
+      const static int WIDTH = 256;
+      const static int HEIGHT = 224;
+      const static int SCALE = 2; 
+      
       Application();
       virtual ~Application();
 

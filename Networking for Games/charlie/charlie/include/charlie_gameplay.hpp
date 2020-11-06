@@ -7,17 +7,119 @@
 #include <map>
 #include <typeinfo>
 #include <type_traits>
+#include <pugixml.hpp>
+#include <string>
 
-namespace charlie {
-   namespace gameplay {
+namespace charlie 
+{
+   namespace gameplay 
+   {
+       namespace collision
+       {
+           bool rect_rect_collision(Rectangle& p_lhs, Rectangle& p_rhs);
+       }
 
 	   enum class Action
 	   {
 		   UP = 1 << 0,
-		   DOWN = 1 << 1,
-		   RIGHT = 1 << 2,
-		   LEFT = 1 << 3,
+		   LEFT = 1 << 1,
+		   DOWN = 1 << 2,
+		   RIGHT = 1 << 3,
+           BOMB = 1 << 4,
+
+           COUNT
 	   };
+
+
+
+       struct Grid
+       {
+           Vector2 m_position;
+           Vector2 m_tile_size;
+           Vector2 m_world_dimensions;
+
+           static void draw(const Grid& p_grid, Renderer& p_renderer, const Color& p_color, int p_scale);
+           static void draw_position(const Grid& p_grid, Renderer& p_renderer, const Color& p_color, const Vector2& p_index, int p_scale);
+           static Vector2 world_to_grid(const Grid& p_grid, const Vector2& p_world_pos);
+           static Vector2 grid_to_world(const Grid& p_grid, const Vector2& p_grid_position);
+       };
+
+       struct Tilemap
+       {
+            enum TileType
+            {
+                NONE,
+                BLOCK,
+                DESTRUCTIBLE,
+                WALKABLE
+            };
+
+            char m_tile_map[256];
+            uint32 m_transfer_buffer[16] = { 0 };
+
+            static void apply_received_data(Tilemap& p_map);
+            static void prepare_sent_data(Tilemap& p_map);
+
+            static void init(Tilemap& p_map, std::string p_path);
+            static void set_data(Tilemap& p_map, const std::string& p_data);
+            static void render(const Tilemap& p_map, Grid& p_grid, Renderer& p_renderer, const uint8 p_scale);
+            static bool collides(Tilemap& p_map, Grid& p_grid, Vector2 p_position, Vector2 p_dimension);
+            static char& get_tile_type(Tilemap& p_map, uint8 p_x, uint8 p_y);
+
+       };
+
+       struct Blast
+       {
+           bool m_active;
+           Transform m_transform;
+           Vector2 m_dimension;
+       };
+
+       struct Explosion
+       {
+           bool m_active;
+           Blast m_blasts[32];
+
+           uint32 m_tick_flag;
+       };
+
+       struct Bomb
+       {
+           bool m_active;
+           Transform m_transform;
+           Vector2 m_dimension;
+
+           uint32 m_tick_flag;
+
+           Explosion m_explosion;
+
+           static void activate(Bomb& p_bomb, 
+                                const Grid& p_grid, 
+                                const Vector2& p_world_pos, 
+                                const uint32& p_world_tick, 
+                                const uint32& p_explode_in);
+           static void update(Bomb& p_bomb, 
+                              Tilemap& p_map, 
+                              const Grid& p_grid, 
+                              const uint32& p_world_tick, 
+                              const uint32& p_explode_duration);
+           static void clean_explosion(Explosion& p_explosion, 
+                                       const uint32& p_world_ticks);
+       };
+
+       struct Player
+       {
+           bool m_active;
+           Transform m_transform;
+           Vector2 m_dimension;
+
+           Bomb m_bomb;
+
+           static void draw(Renderer& p_renderer, 
+                            Player& p_player, 
+                            int32 p_scale, 
+                            Color p_color = Color::Red);
+       };
 
 	   typedef uint16 Entity;
 
