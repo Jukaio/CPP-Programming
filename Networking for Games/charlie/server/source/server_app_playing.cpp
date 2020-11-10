@@ -152,7 +152,7 @@ void ServerApp::Playing::on_tick(const Time& dt)
 				direction.x_ += 1;
 
 			direction.normalize();
-			Vector2 next_pos = m_players[i].m_transform.position_ + direction * 1.0f;
+			Vector2 next_pos = m_players[i].m_transform.position_ + direction * PLAYER_SPEED * dt.as_seconds();
 			m_players[i].m_transform.set_position(next_pos);
 
 			if(gameplay::Tilemap::collides(m_tilemap,
@@ -301,8 +301,8 @@ void ServerApp::Playing::on_draw()
 	for(int i = 0; i < MAX_PLAYERS; i++)
 	{
 		gameplay::Player::draw(get_context().renderer_,
-									  m_players[i],
-									  SCALE);
+							   m_players[i],
+							   SCALE);
 	}
 
 	for(int p = 0; p < MAX_PLAYERS; p++)

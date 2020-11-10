@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Collision">
+      <UniqueIdentifier>{d82b69cc-f99b-42c3-8104-5d23125c8b46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{d11c3572-9c9c-4b0c-9d6f-469918ed24a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Collision">
+      <UniqueIdentifier>{218d25f9-7be3-4fcd-a0ee-edab98cfafe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{d68010a5-0ab7-4b89-92de-770d5fb4e22a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\FSM">
+      <UniqueIdentifier>{6675656a-1554-4c8a-9f96-7c6b62f7f48b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FSM">
+      <UniqueIdentifier>{8dc9cad3-9304-4d89-b442-b1c22f7ceffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{08bfdccf-f0a4-47cb-99cb-ceecc850795e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sound">
+      <UniqueIdentifier>{11c9d80a-77c8-4cf8-a3c6-264f545ffeb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sound">
+      <UniqueIdentifier>{01d443e0-8cf3-485b-9c9b-050c4042d9e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{f7a75823-1720-45cc-839c-97bc90ea24f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sprite">
+      <UniqueIdentifier>{394d8559-df4c-4dce-8cac-530613d70315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sprite">
+      <UniqueIdentifier>{99ac9ebc-94db-40c4-b869-b49d05f967ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Music">
+      <UniqueIdentifier>{df303dce-e44d-4a73-ab3a-d18424e09b10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{f0bd7791-4c6b-479c-a65d-ad30be1ca527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Text">
+      <UniqueIdentifier>{32f29015-fa2c-436a-a420-a2115c5886a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Text">
+      <UniqueIdentifier>{5ea2af82-3544-46e0-a507-07b199863e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Music">
+      <UniqueIdentifier>{a43f1661-3bae-4046-a121-4260b8a5e84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{a3521043-9525-4aff-8e0f-496f9e57e836}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\zelda">
+      <UniqueIdentifier>{242cdae3-a2a6-4557-8a63-f61b3bd4058e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\zelda\game_states">
+      <UniqueIdentifier>{d3307eff-3c15-4f3c-a1e3-c89b3cb94736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\zelda\game_object">
+      <UniqueIdentifier>{a9c7f400-41ee-4836-8e1a-4ce915dd03b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\zelda">
+      <UniqueIdentifier>{30e2bd31-9141-4c9e-9253-ee4ab20bac04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\zelda\game_object">
+      <UniqueIdentifier>{0fdc212a-9063-47a9-8f9d-adae3501313f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\zelda\game_states">
+      <UniqueIdentifier>{d8519196-bdd2-46f9-a56f-3eadcdb7e983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tile_map">
+      <UniqueIdentifier>{affb4796-bc32-413f-9b61-4fec08ef8b51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tile_map">
+      <UniqueIdentifier>{4e1bd3d8-7e50-43bc-a423-8e3def52b084}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="input_handler.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="collider.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="collision_handler.cpp">
+      <Filter>Source Files\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="finite_state_machine.cpp">
+      <Filter>Source Files\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Source Files\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_manager.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="music.cpp">
+      <Filter>Source Files\Music</Filter>
+    </ClCompile>
+    <ClCompile Include="music_player.cpp">
+      <Filter>Source Files\Music</Filter>
+    </ClCompile>
+    <ClCompile Include="sound_container.cpp">
+      <Filter>Source Files\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="text_map_format.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="text_map_format_atlas.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="text_printer.cpp">
+      <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="state.cpp">
+      <Filter>Source Files\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="title_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="lore_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="zelda.cpp">
+      <Filter>Source Files\zelda</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_drawer.cpp">
+      <Filter>Source Files\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="static_image.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="scrolling_image.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="multiple_images.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="selection.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="one_way_list.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="gameplay_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Source Files\tile_map</Filter>
+    </ClCompile>
+    <ClCompile Include="tile_set.cpp">
+      <Filter>Source Files\tile_map</Filter>
+    </ClCompile>
+    <ClCompile Include="layer.cpp">
+      <Filter>Source Files\tile_map</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="health_pickup.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="projectile.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sword.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+    <ClCompile Include="win_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="lose_state.cpp">
+      <Filter>Source Files\zelda\game_states</Filter>
+    </ClCompile>
+    <ClCompile Include="octorok.cpp">
+      <Filter>Source Files\zelda\game_object</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="collider.h">
+      <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision_handler.h">
+      <Filter>Header Files\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="finite_state_machine.h">
+      <Filter>Header Files\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="state.h">
+      <Filter>Header Files\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="input_handler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="service.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>Header Files\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_cache.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_manager.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="text.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="music.h">
+      <Filter>Header Files\Music</Filter>
+    </ClInclude>
+    <ClInclude Include="music_player.h">
+      <Filter>Header Files\Music</Filter>
+    </ClInclude>
+    <ClInclude Include="sound_container.h">
+      <Filter>Header Files\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="text_map_format.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="character.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="text_map_format_atlas.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="text_printer.h">
+      <Filter>Header Files\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="zelda.h">
+      <Filter>Header Files\zelda</Filter>
+    </ClInclude>
+    <ClInclude Include="title_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="lore_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite_drawer.h">
+      <Filter>Header Files\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="static_image.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="scrolling_image.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="menu_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="multiple_images.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="selection.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl_math.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="one_way_list.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="gameplay_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="tile.h">
+      <Filter>Header Files\tile_map</Filter>
+    </ClInclude>
+    <ClInclude Include="tile_set.h">
+      <Filter>Header Files\tile_map</Filter>
+    </ClInclude>
+    <ClInclude Include="layer.h">
+      <Filter>Header Files\tile_map</Filter>
+    </ClInclude>
+    <ClInclude Include="pugiconfig.hpp">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml.hpp">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="health_pickup.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="sword.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="projectile.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lose_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="win_state.h">
+      <Filter>Header Files\zelda\game_states</Filter>
+    </ClInclude>
+    <ClInclude Include="octorok.h">
+      <Filter>Header Files\zelda\game_object</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+</Project>

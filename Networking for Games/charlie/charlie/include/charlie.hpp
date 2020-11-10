@@ -71,7 +71,7 @@ namespace charlie {
 		   return m_buffer[(m_index + buffer_size - 1) % buffer_size];
 	   }
 
-	   T& previous(const uint32 offset = 0)
+	   T& previous(const int32 offset = 0)
 	   {
 		   return m_buffer[(m_index + buffer_size - 2 - offset) % buffer_size];
 	   }

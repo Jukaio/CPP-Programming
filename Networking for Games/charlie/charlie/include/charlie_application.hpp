@@ -10,6 +10,8 @@
 const charlie::Time SERVER_SEND_RATE = 1.0 / 20.0f;
 const charlie::Time CLIENT_SEND_RATE = 1.0 / 60.0f;
 
+const static float PLAYER_SPEED = 40.0f;
+
 namespace charlie {
    struct Application 
    {
@@ -17,6 +19,7 @@ namespace charlie {
       const static int HEIGHT = 224;
       const static int SCALE = 2; 
       
+
       Application();
       virtual ~Application();
 

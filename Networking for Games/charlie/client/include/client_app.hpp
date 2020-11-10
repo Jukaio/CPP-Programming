@@ -34,6 +34,13 @@ struct ClientApp final : Application, network::IConnectionListener
 		uint32 m_tick;
 	};
 
+	struct PositionInputTimeState
+	{
+		Vector2 m_state;
+		uint8 m_input;
+		uint32 m_tick;
+	};
+
 	struct PostionInputinator
 	{
 		PostionInputinator()
@@ -41,13 +48,14 @@ struct ClientApp final : Application, network::IConnectionListener
 			
 		}
 
-		void push(Vector2 p_state, uint32 p_tick)
+		void push(Vector2 p_state, uint8 p_input, uint32 p_tick)
 		{
-			PositionTimeState state;
+			PositionInputTimeState state;
 			state.m_state = p_state;
 			state.m_tick = p_tick;
+			state.m_input = p_input;
 
-			m_position_tick_buffer.push(state);
+			m_position_input_tick_buffer.push(state);
 		}
 
 		void set_context(Vector2& p_position)
@@ -55,37 +63,66 @@ struct ClientApp final : Application, network::IConnectionListener
 			m_position = &p_position;
 		}
 
-		void set_latest_server_state(Vector2 p_state, uint32 p_tick)
+		void push_server_state(Vector2 p_state, uint32 p_tick)
 		{
-			m_latest_server_postion_tick.m_tick = p_tick;
-			m_latest_server_postion_tick.m_state = p_state;
+			PositionTimeState state;
+			state.m_state = p_state;
+			state.m_tick = p_tick;
+
+			m_server_position_tick_buffer.push(state);
 		}
 
-		bool input_correction(float p_correction_distance)
+		bool input_correction(float p_correction_distance, const Time& p_dt, std::function<Vector2(uint8)> p_input_direction_function)
 		{
-			Vector2* position = nullptr;
-			for(int j = 0; j < 64; j++)
+			Vector2* prediction = nullptr;
+			int steps_back = 0;
+
+			for(int j = -1; j < 63; j++) // -1 == current 
 			{
-				if(m_latest_server_postion_tick.m_tick == m_position_tick_buffer.previous(j).m_tick)
+				if(m_server_position_tick_buffer.current().m_tick == m_position_input_tick_buffer.previous(j).m_tick)
 				{
-					position = &m_position_tick_buffer.previous(j).m_state;
+					prediction = &m_position_input_tick_buffer.previous(j).m_state;
+					steps_back = j;
 					break;
 				}
+
 			}
 
-			if(position)
-				if(Vector2::distance(*position, m_latest_server_postion_tick.m_state) >= p_correction_distance)
+			if(prediction)
+			{
+				PositionTimeState& server_state = m_server_position_tick_buffer.current();
+				float distance = Vector2::distance(*prediction, server_state.m_state);
+				if(distance >= p_correction_distance)
 				{
-					*m_position = m_latest_server_postion_tick.m_state;
+					// change the corresponding buffer state to the actual server state 
+					// If steps back == -1, then the for loop gets skipped since previous(-1) == current
+					m_position_input_tick_buffer.previous(steps_back).m_state = server_state.m_state;
+
+					// Use the first changed position for the simulation of the next position
+					Vector2 prev_position = m_position_input_tick_buffer.previous(steps_back).m_state;
+					for(int k = steps_back - 1; k >= -1; k--)
+					{
+						PositionInputTimeState& temp = m_position_input_tick_buffer.previous(k);
+						Vector2 direction = p_input_direction_function(temp.m_input);
+
+						if(direction.length() > 0) // Simmulate next position in the buffer
+							temp.m_state = prev_position + (direction * PLAYER_SPEED * p_dt.as_seconds());
+
+						prev_position = temp.m_state;
+					}
+					// Apply the last corrected value to the current position of the player
+					*m_position = m_server_position_tick_buffer.current().m_state;
 					return true;
 				}
+			}
 			return false;
 		}
 
 
 	private:
-		PositionTimeState m_latest_server_postion_tick;
-		RingBuffer<PositionTimeState, 64> m_position_tick_buffer;
+		// I changed this, if something is buggy, revert to git | From David to David
+		RingBuffer<PositionTimeState, 64> m_server_position_tick_buffer;
+		RingBuffer<PositionInputTimeState, 64> m_position_input_tick_buffer;
 		Vector2* m_position = nullptr;
 
 	};

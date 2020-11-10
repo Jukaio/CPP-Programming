@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{4DF5822C-23FD-4351-9A94-39D4BDA07A65}</ProjectGuid>
+    <RootNamespace>Caligula</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Caligula</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\Bin\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies\SDL2\include</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\Bin\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies\SDL2\include</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\Bin\</IntDir>
+    <IncludePath>$(SolutionDir)\Dependencies\SDL2\include;$(SolutionDir)\Dependencies\SDL2_mixer\include;$(SolutionDir)\Dependencies\SDL2_image\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\Builds\$(Platform)\$(Configuration)\Bin\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies\SDL2\include</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="character.cpp" />
+    <ClCompile Include="octorok.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="gameplay_state.cpp" />
+    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="health_pickup.cpp" />
+    <ClCompile Include="layer.cpp" />
+    <ClCompile Include="lore_state.cpp" />
+    <ClCompile Include="lose_state.cpp" />
+    <ClCompile Include="menu_state.cpp" />
+    <ClCompile Include="mouse.cpp" />
+    <ClCompile Include="one_way_list.cpp" />
+    <ClCompile Include="music.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="projectile.cpp" />
+    <ClCompile Include="pugixml.cpp" />
+    <ClCompile Include="scrolling_image.cpp" />
+    <ClCompile Include="multiple_images.cpp" />
+    <ClCompile Include="selection.cpp" />
+    <ClCompile Include="sound.cpp" />
+    <ClCompile Include="music_player.cpp" />
+    <ClCompile Include="sound_container.cpp" />
+    <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="sprite_drawer.cpp" />
+    <ClCompile Include="state.cpp" />
+    <ClCompile Include="collider.cpp" />
+    <ClCompile Include="collision_handler.cpp" />
+    <ClCompile Include="finite_state_machine.cpp" />
+    <ClCompile Include="input_handler.cpp" />
+    <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="static_image.cpp" />
+    <ClCompile Include="sword.cpp" />
+    <ClCompile Include="text.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="texture_manager.cpp" />
+    <ClCompile Include="text_map_format.cpp" />
+    <ClCompile Include="text_map_format_atlas.cpp" />
+    <ClCompile Include="text_printer.cpp" />
+    <ClCompile Include="tile.cpp" />
+    <ClCompile Include="tile_set.cpp" />
+    <ClCompile Include="title_state.cpp" />
+    <ClCompile Include="win_state.cpp" />
+    <ClCompile Include="zelda.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="character.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="octorok.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="gameplay_state.h" />
+    <ClInclude Include="GUI.h" />
+    <ClInclude Include="health_pickup.h" />
+    <ClInclude Include="layer.h" />
+    <ClInclude Include="lore_state.h" />
+    <ClInclude Include="lose_state.h" />
+    <ClInclude Include="menu_state.h" />
+    <ClInclude Include="one_way_list.h" />
+    <ClInclude Include="music.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="projectile.h" />
+    <ClInclude Include="pugiconfig.hpp" />
+    <ClInclude Include="pugixml.hpp" />
+    <ClInclude Include="resource_cache.h" />
+    <ClInclude Include="scrolling_image.h" />
+    <ClInclude Include="sdl_math.h" />
+    <ClInclude Include="multiple_images.h" />
+    <ClInclude Include="selection.h" />
+    <ClInclude Include="sound.h" />
+    <ClInclude Include="music_player.h" />
+    <ClInclude Include="sound_container.h" />
+    <ClInclude Include="sprite.h" />
+    <ClInclude Include="sprite_drawer.h" />
+    <ClInclude Include="collider.h" />
+    <ClInclude Include="collision_handler.h" />
+    <ClInclude Include="entity.h" />
+    <ClInclude Include="finite_state_machine.h" />
+    <ClInclude Include="input_handler.h" />
+    <ClInclude Include="keyboard.h" />
+    <ClInclude Include="mouse.h" />
+    <ClInclude Include="service.h" />
+    <ClInclude Include="state.h" />
+    <ClInclude Include="static_image.h" />
+    <ClInclude Include="sword.h" />
+    <ClInclude Include="text.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="texture_manager.h" />
+    <ClInclude Include="text_map_format.h" />
+    <ClInclude Include="text_map_format_atlas.h" />
+    <ClInclude Include="text_printer.h" />
+    <ClInclude Include="tile.h" />
+    <ClInclude Include="tile_set.h" />
+    <ClInclude Include="title_state.h" />
+    <ClInclude Include="win_state.h" />
+    <ClInclude Include="zelda.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -51,7 +51,7 @@ ClientApp::Game::Game(ClientApp& p_context)
 			 						   message.tick_);
 
 			  if(uint8(i) == client_app.m_id_on_server)
-				m_inputinator.set_latest_server_state(Vector2{ replica_position_ptr[(i * vector_offset) + x_index],
+				m_inputinator.push_server_state(Vector2{ replica_position_ptr[(i * vector_offset) + x_index],
 															   replica_position_ptr[(i * vector_offset) + y_index] },
 													  message.tick_);
 		  };
@@ -210,33 +210,38 @@ void ClientApp::Game::on_tick(const Time& dt)
 			}
 			else
 			{
+				std::function<Vector2(uint8)> input_direction_function = [](uint8 p_input)
+				{
+					Vector2 direction{ 0, 0 };
+					if(p_input & uint8(gameplay::Action::UP))
+						direction.y_ -= 1;
+					if(p_input & uint8(gameplay::Action::LEFT))
+						direction.x_ -= 1;
+					if(p_input & uint8(gameplay::Action::DOWN))
+						direction.y_ += 1;
+					if(p_input & uint8(gameplay::Action::RIGHT))
+						direction.x_ += 1;
+					direction.normalize();
+					return direction;
+				};
+
 				Vector2 prev_pos = m_players[id].m_transform.position_;
+				Vector2 direction = input_direction_function(m_input_bits);
 
-				Vector2 direction{ 0, 0 };
-				if(m_input_bits & uint8(gameplay::Action::UP))
-					direction.y_ -= 1;
-				if(m_input_bits & uint8(gameplay::Action::LEFT))
-					direction.x_ -= 1;
-				if(m_input_bits & uint8(gameplay::Action::DOWN))
-					direction.y_ += 1;
-				if(m_input_bits & uint8(gameplay::Action::RIGHT))
-					direction.x_ += 1;
-
-				direction.normalize();
 				if(direction.length() > 0)
 				{
-					Vector2 next_pos = m_players[id].m_transform.position_ + direction * 1.0f;
+					Vector2 next_pos = m_players[id].m_transform.position_ + direction * PLAYER_SPEED * dt.as_seconds();
 					m_players[id].m_transform.set_position(next_pos);
 
 					if(gameplay::Tilemap::collides(get_context().m_tilemap,
 					   get_context().m_grid,
 					   m_players[id].m_transform.position_,
 					   m_players[id].m_dimension))
-						m_players[id].m_transform.set_position(prev_pos);
+						 m_players[id].m_transform.set_position(prev_pos);
 
 
 				}
-				if(m_inputinator.input_correction(5.0f))
+				if(m_inputinator.input_correction(5.0f, dt, input_direction_function))
 					get_context().m_network_data[CURRENT][NetworkInformation::INPUT_MISSPREDICTIONS]++;
 			}
 
@@ -266,8 +271,9 @@ void ClientApp::Game::on_tick(const Time& dt)
 		}
 	}
 
-	m_inputinator.push({ m_players[id].m_transform.position_ },
-						 m_current_server_tick);
+	m_inputinator.push(m_players[id].m_transform.position_ ,
+					   m_input_bits,
+					   m_current_server_tick);
 
 	if(m_current_server_tick > m_game_end_tick && m_game_over)
 	{
