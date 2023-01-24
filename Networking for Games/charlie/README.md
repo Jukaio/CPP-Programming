@@ -5,8 +5,8 @@ Bomberman clone with network multiplayer
 ![Bomb](https://user-images.githubusercontent.com/47029889/214389747-ce353976-b9c4-446e-91b8-851638622306.gif)
 
 Used libraries: 
-Charlie from teacher,
-pugixml from the net
+- Charlie from teacher - got further extended as needed,
+- pugixml from the net
 
 UDP Network; Server and client based
 The server is authoritative 
